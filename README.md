@@ -1,6 +1,7 @@
 # Band9 Web
 
-React 18 + Vite + TypeScript 기반 프론트엔드 프로젝트
+IELTS 공부용 서비스 Frontend 레포지터리입니다.
+Author : junoshon
 
 ## 기술 스택
 
@@ -58,5 +59,6 @@ src/
 - Feature-based 디렉토리 구조 사용
 - 모든 경로는 절대 경로 사용
 - Proxy를 통한 백엔드 API 호출
+
 
 
