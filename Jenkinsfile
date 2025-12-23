@@ -1,28 +1,55 @@
-stage('4-1. 배포: Development') {
-            when { branch 'develop' }
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "Band9-Web"
+    }
+
+    stages {
+        stage('1. 환경 확인') {
             steps {
-                echo "🚀 [DEV] 개발 서버로 배포를 시작합니다."
-                // 큰따옴표 대신 작은따옴표(' ')를 사용하세요.
-                sh 'echo "[DEV] Deploying at $(date)" >> deploy.log'
-                echo "✅ DEV 배포 완료!"
+                echo "현재 브랜치: ${env.BRANCH_NAME}"
+            }
+        }
+
+        stage('2. 가상 빌드') {
+            steps {
+                echo "빌드 시뮬레이션 중..."
+                sh 'echo "Build Start: $(date)"'
+            }
+        }
+
+        // --- 여기서부터 중요: when의 위치를 확인하세요 ---
+
+        stage('4-1. 배포: Development') {
+            when { 
+                branch 'develop' 
+            } // steps 블록 "위"에 있어야 합니다.
+            steps {
+                echo "🚀 [DEV] 개발 서버 배포 로그 기록"
+                sh 'echo "[DEV] Deploy at $(date)" >> deploy.log'
             }
         }
 
         stage('4-2. 배포: Staging') {
-            when { branch 'stage' }
+            when { 
+                branch 'stage' 
+            }
             steps {
-                echo "🚧 [STAGE] 검증 서버로 배포를 시작합니다."
-                sh 'echo "[STAGE] Deploying at $(date)" >> deploy.log'
-                echo "✅ STAGE 배포 완료!"
+                echo "🚧 [STAGE] 검증 서버 배포 로그 기록"
+                sh 'echo "[STAGE] Deploy at $(date)" >> deploy.log'
             }
         }
 
-        stage('4-3. 배포: Production (Main)') {
-            when { branch 'main' }
+        stage('4-3. 배포: Production') {
+            when { 
+                branch 'main' 
+            }
             steps {
-                input message: "⚠️ [운영] 실제 서비스에 배포하시겠습니까?", ok: "배포 승인"
-                echo "🔥 [MAIN] 운영 서버로 실제 배포를 진행합니다!"
-                sh 'echo "[PROD] Deploying at $(date)" >> deploy.log'
-                echo "🎊 MAIN(Production) 환경 배포가 성공적으로 완료되었습니다!"
+                input message: "운영 서버 배포를 승인하시겠습니까?", ok: "승인"
+                echo "🔥 [MAIN] 운영 서버 배포 로그 기록"
+                sh 'echo "[PROD] Deploy at $(date)" >> deploy.log'
             }
         }
+    }
+}
