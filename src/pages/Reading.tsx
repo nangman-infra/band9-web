@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar } from '/Users/junoshon/Developments/band9-web/src/domains/reading';
+import { Calendar } from '@/domains/reading';
 
 const containerStyle = css`
   min-height: 100vh;

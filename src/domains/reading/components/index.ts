@@ -1,3 +1,3 @@
-export { default as Calendar } from '/Users/junoshon/Developments/band9-web/src/domains/reading/components/Calendar.tsx';
-export { default as ReadingPractice } from '/Users/junoshon/Developments/band9-web/src/domains/reading/components/ReadingPractice.tsx';
+export { default as Calendar } from '@/domains/reading/components/Calendar.tsx';
+export { default as ReadingPractice } from '@/domains/reading/components/ReadingPractice.tsx';
 
