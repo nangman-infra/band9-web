@@ -9,7 +9,7 @@ pipeline {
         
         // 슬랙 설정
         SLACK_CHANNEL = "cicd-notification"
-        SLACK_CREDENTIAL_ID = "slack-webhook-url"
+        SLACK_CREDENTIAL_ID = "Mr.Jenkins"
     }
 
     stages {
