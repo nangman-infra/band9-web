@@ -63,19 +63,43 @@ const daysGridStyle = css`
   gap: 0.5rem;
 `;
 
-const dayButtonStyle = (isCurrentMonth: boolean, isToday: boolean) => css`
-  background: ${isToday ? '#E6F2FF' : isCurrentMonth ? 'white' : '#f5f5f5'};
-  border: ${isToday ? '2px solid #004C97' : '1px solid #e0e0e0'};
+const dayButtonStyle = (
+  isCurrentMonth: boolean,
+  isToday: boolean,
+  isSelected: boolean,
+) => css`
+  background: ${isSelected
+    ? '#004C97'
+    : isToday
+      ? '#E6F2FF'
+      : isCurrentMonth
+        ? 'white'
+        : '#f5f5f5'};
+  border: ${isSelected
+    ? '2px solid #0066CC'
+    : isToday
+      ? '2px solid #004C97'
+      : '1px solid #e0e0e0'};
   border-radius: 8px;
   padding: 1rem;
   cursor: pointer;
-  color: ${isToday ? '#004C97' : isCurrentMonth ? '#333' : '#999'};
+  color: ${isSelected
+    ? 'white'
+    : isToday
+      ? '#004C97'
+      : isCurrentMonth
+        ? '#333'
+        : '#999'};
   font-size: 1rem;
-  font-weight: ${isToday ? '600' : '400'};
+  font-weight: ${isSelected || isToday ? '600' : '400'};
   transition: all 0.2s;
 
   &:hover {
-    background: ${isToday ? '#D0E0FF' : '#f0f0f0'};
+    background: ${isSelected
+      ? '#0066CC'
+      : isToday
+        ? '#D0E0FF'
+        : '#f0f0f0'};
     transform: translateY(-2px);
     box-shadow: 0 2px 4px rgba(0, 76, 151, 0.1);
   }
@@ -85,13 +109,37 @@ const emptyDayStyle = css`
   padding: 1rem;
 `;
 
+const actionButtonsStyle = css`
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+`;
+
+const actionButtonStyle = css`
+  background: #004C97;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #0066CC;
+  }
+`;
+
 interface CalendarProps {
-  onDateSelect: (date: string) => void;
+  onDateSelect: (date: string, mode: 'input' | 'practice') => void;
 }
 
 function Calendar({ onDateSelect }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const navigate = useNavigate();
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -120,16 +168,31 @@ function Calendar({ onDateSelect }: CalendarProps) {
 
   const handleDateClick = (day: number) => {
     const dateString = formatDateToString(year, month, day);
-    onDateSelect(dateString);
-    navigate(`/reading/${dateString}`);
+    setSelectedDate(dateString);
+  };
+
+  const handleInputClick = () => {
+    if (selectedDate) {
+      onDateSelect(selectedDate, 'input');
+      navigate(`/vocabulary/${selectedDate}/input`);
+    }
+  };
+
+  const handlePracticeClick = () => {
+    if (selectedDate) {
+      onDateSelect(selectedDate, 'practice');
+      navigate(`/vocabulary/${selectedDate}/practice`);
+    }
   };
 
   const goToPreviousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
+    setSelectedDate(null);
   };
 
   const goToNextMonth = () => {
     setCurrentDate(new Date(year, month + 1, 1));
+    setSelectedDate(null);
   };
 
   const monthYearString = `${new Date(year, month).toLocaleString('en-US', { month: 'long' })} ${year}`;
@@ -170,10 +233,13 @@ function Calendar({ onDateSelect }: CalendarProps) {
           if (day === null) {
             return <div key={`empty-${index}`} css={emptyDayStyle} />;
           }
+          const dateString = formatDateToString(year, month, day);
+          const isSelected = selectedDate === dateString;
+          const isTodayDate = isToday(day);
           return (
             <motion.button
               key={day}
-              css={dayButtonStyle(true, isToday(day))}
+              css={dayButtonStyle(true, isTodayDate, isSelected)}
               onClick={() => handleDateClick(day)}
               type="button"
               whileHover={{ scale: 1.05 }}
@@ -184,10 +250,23 @@ function Calendar({ onDateSelect }: CalendarProps) {
           );
         })}
       </div>
+      {selectedDate && (
+        <motion.div
+          css={actionButtonsStyle}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <button css={actionButtonStyle} onClick={handleInputClick} type="button">
+            Input Words
+          </button>
+          <button css={actionButtonStyle} onClick={handlePracticeClick} type="button">
+            Practice
+          </button>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
 
 export default Calendar;
-
 

@@ -8,12 +8,9 @@ const containerStyle = css`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #F5F7FA;
   padding: 2rem;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
 const headerStyle = css`
@@ -60,7 +57,7 @@ const generateButtonStyle = css`
   cursor: pointer;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #667eea;
+  color: #004C97;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
   margin-bottom: 2rem;
@@ -93,7 +90,7 @@ const passageTitleStyle = css`
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #667eea;
+  color: #004C97;
 `;
 
 const passageTextStyle = css`
@@ -108,7 +105,7 @@ const sectionTitleStyle = css`
   font-weight: 600;
   margin-bottom: 1rem;
   color: #333;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #004C97;
   padding-bottom: 0.5rem;
 `;
 
@@ -127,7 +124,7 @@ const explanationStyle = css`
   padding: 1rem;
   background: #f0f7ff;
   border-radius: 8px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #004C97;
 `;
 
 const emptyStateStyle = css`
@@ -166,11 +163,8 @@ function ReadingPractice() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const formatDate = (dateString: string) => {
-    const dateObj = new Date(dateString);
-    const year = dateObj.getFullYear();
-    const month = dateObj.getMonth() + 1;
-    const day = dateObj.getDate();
-    return `${year}년 ${month}월 ${day}일`;
+    const [year, month, day] = dateString.split('-').map(Number);
+    return `${month}/${day}/${year}`;
   };
 
   const handleGenerateClick = async () => {
@@ -181,10 +175,10 @@ function ReadingPractice() {
       setPassages([
         {
           id: 1,
-          title: '지문 1',
-          text: '여기에 지문 내용이 표시됩니다. 백엔드에서 받아온 지문이 여기에 표시될 예정입니다.',
-          answer: '정답: A',
-          explanation: '해설: 이 문제는 ...',
+          title: 'Passage 1',
+          text: 'Passage content will be displayed here. The passage received from the backend will be shown here.',
+          answer: 'Answer: A',
+          explanation: 'Explanation: This question is about...',
         },
       ]);
       setIsGenerating(false);
@@ -205,11 +199,11 @@ function ReadingPractice() {
     >
       <div css={headerStyle}>
         <div>
-          <h1 css={titleStyle}>리딩 연습</h1>
+          <h1 css={titleStyle}>Reading Practice</h1>
           {date && <div css={dateDisplayStyle}>{formatDate(date)}</div>}
         </div>
         <button css={backButtonStyle} onClick={handleBackClick} type="button">
-          ← 캘린더로
+          ← Calendar
         </button>
       </div>
       <div css={contentStyle}>
@@ -221,7 +215,7 @@ function ReadingPractice() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          {isGenerating ? '지문 생성 중...' : '지문 생성'}
+          {isGenerating ? 'Generating...' : 'Generate Passage'}
         </motion.button>
 
         {passages.length === 0 ? (
@@ -231,7 +225,7 @@ function ReadingPractice() {
             animate={{ opacity: 1, y: 0 }}
           >
             <p css={emptyStateTextStyle}>
-              위의 "지문 생성" 버튼을 클릭하여 지문을 생성하세요.
+              Click the "Generate Passage" button above to create a passage.
             </p>
           </motion.div>
         ) : (
@@ -246,9 +240,9 @@ function ReadingPractice() {
               >
                 <h2 css={passageTitleStyle}>{passage.title}</h2>
                 <div css={passageTextStyle}>{passage.text}</div>
-                <h3 css={sectionTitleStyle}>정답</h3>
+                <h3 css={sectionTitleStyle}>Answer</h3>
                 <div css={answerStyle}>{passage.answer}</div>
-                <h3 css={sectionTitleStyle}>해설</h3>
+                <h3 css={sectionTitleStyle}>Explanation</h3>
                 <div css={explanationStyle}>{passage.explanation}</div>
               </motion.div>
             ))}

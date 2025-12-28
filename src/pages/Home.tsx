@@ -9,7 +9,7 @@ const containerStyle = css`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #F5F7FA;
   padding: 2rem;
 `;
 
@@ -18,42 +18,44 @@ const titleStyle = css`
   font-weight: 700;
   margin-bottom: 3rem;
   text-align: center;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  color: #004C97;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
 const tabsContainerStyle = css`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  max-width: 800px;
+  max-width: 1000px;
   width: 100%;
 
   @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
 `;
 
 const tabButtonStyle = css`
   background: white;
-  border: none;
+  border: 2px solid #004C97;
   border-radius: 16px;
   padding: 3rem 2rem;
   cursor: pointer;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  color: #004C97;
+  box-shadow: 0 4px 6px rgba(0, 76, 151, 0.1);
+  transition: all 0.2s;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 
   &:hover {
+    background: #004C97;
+    color: white;
     transform: translateY(-4px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 12px rgba(0, 76, 151, 0.2);
   }
 
   &:active {
@@ -74,10 +76,11 @@ const tabVariants = {
 };
 
 const SKILL_TABS = [
-  { id: 'reading', label: '리딩', path: '/reading' },
-  { id: 'writing', label: '라이팅', path: '/writing' },
-  { id: 'listening', label: '리스닝', path: '/listening' },
-  { id: 'speaking', label: '스피킹', path: '/speaking' },
+  { id: 'reading', label: 'Reading', path: '/reading' },
+  { id: 'writing', label: 'Writing', path: '/writing' },
+  { id: 'listening', label: 'Listening', path: '/listening' },
+  { id: 'speaking', label: 'Speaking', path: '/speaking' },
+  { id: 'vocabulary', label: 'Vocabulary', path: '/vocabulary' },
 ] as const;
 
 function Home() {
@@ -89,7 +92,7 @@ function Home() {
 
   return (
     <div css={containerStyle}>
-      <h1 css={titleStyle}>IELTS 연습</h1>
+      <h1 css={titleStyle}>For Band9</h1>
       <div css={tabsContainerStyle}>
         {SKILL_TABS.map((tab, index) => (
           <motion.button
@@ -112,4 +115,5 @@ function Home() {
 }
 
 export default Home;
+
 

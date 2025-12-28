@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Calendar } from '@/domains/vocabulary';
 
 const containerStyle = css`
   min-height: 100vh;
@@ -14,10 +15,18 @@ const containerStyle = css`
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
-const titleStyle = css`
-  font-size: 3rem;
-  font-weight: 700;
+const headerStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
   margin-bottom: 2rem;
+`;
+
+const titleStyle = css`
+  font-size: 2.5rem;
+  font-weight: 700;
   text-align: center;
   color: #004C97;
 `;
@@ -31,7 +40,6 @@ const backButtonStyle = css`
   font-size: 1rem;
   font-weight: 600;
   color: white;
-  margin-top: 2rem;
   box-shadow: 0 2px 4px rgba(0, 76, 151, 0.2);
   transition: all 0.2s;
 
@@ -42,23 +50,27 @@ const backButtonStyle = css`
   }
 `;
 
-const contentStyle = css`
-  text-align: center;
-  font-size: 1.25rem;
-  color: #666666;
-`;
-
 const pageVariants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
 };
 
-function Writing() {
+const TRANSITION_DURATION = 0.2;
+
+function Vocabulary() {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
     navigate('/');
+  };
+
+  const handleDateSelect = (date: string, mode: 'input' | 'practice') => {
+    if (mode === 'input') {
+      navigate(`/vocabulary/${date}/input`);
+    } else {
+      navigate(`/vocabulary/${date}/practice`);
+    }
   };
 
   return (
@@ -68,16 +80,19 @@ function Writing() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.2 }}
+      transition={{ duration: TRANSITION_DURATION }}
     >
-      <h1 css={titleStyle}>Writing Practice</h1>
-      <p css={contentStyle}>Writing practice page.</p>
-      <button css={backButtonStyle} onClick={handleBackClick} type="button">
-        Back to Home
-      </button>
+      <div css={headerStyle}>
+        <button css={backButtonStyle} onClick={handleBackClick} type="button">
+          ← Home
+        </button>
+        <h1 css={titleStyle}>Vocabulary</h1>
+        <div style={{ width: '120px' }} />
+      </div>
+      <Calendar onDateSelect={handleDateSelect} />
     </motion.div>
   );
 }
 
-export default Writing;
+export default Vocabulary;
 

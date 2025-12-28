@@ -12,11 +12,11 @@ const globalStyles = css`
   body {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    background-attachment: fixed;
+    background: #F5F7FA;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   }
 
   #root {
@@ -30,4 +30,5 @@ function GlobalStyles() {
 }
 
 export default GlobalStyles;
+
 

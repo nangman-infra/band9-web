@@ -8,6 +8,9 @@ import ReadingPractice from '@/pages/ReadingPractice.tsx';
 import Writing from '@/pages/Writing.tsx';
 import Listening from '@/pages/Listening.tsx';
 import Speaking from '@/pages/Speaking.tsx';
+import Vocabulary from '@/pages/Vocabulary.tsx';
+import VocabularyInput from '@/pages/VocabularyInput.tsx';
+import VocabularyPractice from '@/pages/VocabularyPractice.tsx';
 
 function AppRoutes() {
   const location = useLocation();
@@ -21,6 +24,9 @@ function AppRoutes() {
         <Route path="/writing" element={<Writing />} />
         <Route path="/listening" element={<Listening />} />
         <Route path="/speaking" element={<Speaking />} />
+        <Route path="/vocabulary" element={<Vocabulary />} />
+        <Route path="/vocabulary/:date/input" element={<VocabularyInput />} />
+        <Route path="/vocabulary/:date/practice" element={<VocabularyPractice />} />
       </Routes>
     </AnimatePresence>
   );

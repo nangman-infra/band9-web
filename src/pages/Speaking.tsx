@@ -9,12 +9,9 @@ const containerStyle = css`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #F5F7FA;
   padding: 2rem;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
 const titleStyle = css`
@@ -22,31 +19,33 @@ const titleStyle = css`
   font-weight: 700;
   margin-bottom: 2rem;
   text-align: center;
+  color: #004C97;
 `;
 
 const backButtonStyle = css`
-  background: white;
+  background: #004C97;
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: white;
   margin-top: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 76, 151, 0.2);
+  transition: all 0.2s;
 
   &:hover {
+    background: #0066CC;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(0, 76, 151, 0.3);
   }
 `;
 
 const contentStyle = css`
   text-align: center;
   font-size: 1.25rem;
-  opacity: 0.9;
+  color: #666666;
 `;
 
 const pageVariants = {
@@ -71,10 +70,10 @@ function Speaking() {
       exit="exit"
       transition={{ duration: 0.2 }}
     >
-      <h1 css={titleStyle}>스피킹 연습</h1>
-      <p css={contentStyle}>스피킹 연습 페이지입니다.</p>
+      <h1 css={titleStyle}>Speaking Practice</h1>
+      <p css={contentStyle}>Speaking practice page.</p>
       <button css={backButtonStyle} onClick={handleBackClick} type="button">
-        홈으로 돌아가기
+        Back to Home
       </button>
     </motion.div>
   );

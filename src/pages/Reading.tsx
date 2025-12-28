@@ -10,12 +10,9 @@ const containerStyle = css`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #F5F7FA;
   padding: 2rem;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
 const headerStyle = css`
@@ -31,23 +28,25 @@ const titleStyle = css`
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
+  color: #004C97;
 `;
 
 const backButtonStyle = css`
-  background: white;
+  background: #004C97;
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 76, 151, 0.2);
+  transition: all 0.2s;
 
   &:hover {
+    background: #0066CC;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(0, 76, 151, 0.3);
   }
 `;
 
@@ -81,9 +80,9 @@ function Reading() {
     >
       <div css={headerStyle}>
         <button css={backButtonStyle} onClick={handleBackClick} type="button">
-          ← 홈으로
+          ← Home
         </button>
-        <h1 css={titleStyle}>리딩 연습</h1>
+        <h1 css={titleStyle}>Reading Practice</h1>
         <div style={{ width: '120px' }} />
       </div>
       <Calendar onDateSelect={handleDateSelect} />
