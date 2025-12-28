@@ -1,4 +1,4 @@
-import { getApiUrl } from '/Users/junoshon/Developments/band9-web/src/config/env.ts';
+import { getApiUrl } from '@/config/env';
 
 // API Response Types
 export interface ApiErrorResponse {

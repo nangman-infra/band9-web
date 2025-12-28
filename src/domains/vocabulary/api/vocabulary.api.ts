@@ -1,5 +1,5 @@
-import { apiFetch, ApiResponse } from '/Users/junoshon/Developments/band9-web/src/utils/api';
-import type { Word, WordCreateRequest } from '/Users/junoshon/Developments/band9-web/src/domains/vocabulary/types';
+import { apiFetch } from '@/utils/api';
+import type { Word, WordCreateRequest } from '@/domains/vocabulary/types';
 
 // 어휘 저장
 export async function createWords(

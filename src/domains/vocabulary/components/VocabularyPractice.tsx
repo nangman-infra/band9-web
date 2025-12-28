@@ -3,9 +3,9 @@ import { css } from '@emotion/react';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import type { Word } from '/Users/junoshon/Developments/band9-web/src/domains/vocabulary/types.ts';
-import { getWordsByDate } from '/Users/junoshon/Developments/band9-web/src/domains/vocabulary/api';
-import { ApiError } from '/Users/junoshon/Developments/band9-web/src/utils/api';
+import type { Word } from '@/domains/vocabulary/types';
+import { getWordsByDate } from '@/domains/vocabulary/api';
+import { ApiError } from '@/utils/api';
 
 const containerStyle = css`
   min-height: 100vh;
@@ -225,6 +225,8 @@ function VocabularyPractice() {
       // HTTP 200이어도 응답 파싱 실패 시 에러 처리
       if (error instanceof ApiError) {
         alert(`Failed to load words: ${error.message}`);
+      } else if (error instanceof Error) {
+        alert(`Failed to load words: ${error.message}`);
       } else {
         alert('Failed to load words: Unknown error');
       }
@@ -381,7 +383,7 @@ function VocabularyPractice() {
           {mode === 'blank' ? (
             <>
               <div css={exampleTextStyle}>
-                {exampleWithBlank.split('______').map((part, index, array) => (
+                {exampleWithBlank.split('______').map((part: string, index: number, array: string[]) => (
                   <span key={index}>
                     {part}
                     {index < array.length - 1 && (
@@ -400,7 +402,7 @@ function VocabularyPractice() {
           ) : (
             <>
               <div css={exampleTextStyle}>
-                {exampleWithBlank.split('______').map((part, index, array) => (
+                {exampleWithBlank.split('______').map((part: string, index: number, array: string[]) => (
                   <span key={index}>
                     {part}
                     {index < array.length - 1 && (

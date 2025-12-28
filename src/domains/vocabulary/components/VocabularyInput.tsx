@@ -3,10 +3,10 @@ import { css } from '@emotion/react';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import type { WordInput, Word } from '/Users/junoshon/Developments/band9-web/src/domains/vocabulary/types.ts';
-import { createWords, getWordsByDate, deleteWord } from '/Users/junoshon/Developments/band9-web/src/domains/vocabulary/api';
-import { ApiError } from '/Users/junoshon/Developments/band9-web/src/utils/api';
-import Toast from '/Users/junoshon/Developments/band9-web/src/components/Toast.tsx';
+import type { WordInput, Word } from '@/domains/vocabulary/types';
+import { createWords, getWordsByDate, deleteWord } from '@/domains/vocabulary/api';
+import { ApiError } from '@/utils/api';
+import Toast from '@/components/Toast';
 
 const containerStyle = css`
   min-height: 100vh;
@@ -219,7 +219,7 @@ function VocabularyInput() {
   };
 
   const handleInputChange = (field: keyof WordInput, value: string) => {
-    setCurrentWord((prev) => ({ ...prev, [field]: value }));
+    setCurrentWord((prev: WordInput) => ({ ...prev, [field]: value }));
   };
 
   useEffect(() => {
@@ -243,6 +243,8 @@ function VocabularyInput() {
         if (error.status !== 404) {
           alert(`Failed to load words: ${error.message}`);
         }
+      } else if (error instanceof Error) {
+        alert(`Failed to load words: ${error.message}`);
       } else {
         alert('Failed to load words: Unknown error');
       }
@@ -259,7 +261,7 @@ function VocabularyInput() {
         word: currentWord.word,
         meaning: currentWord.meaning,
         partOfSpeech: currentWord.partOfSpeech || null,
-        synonyms: currentWord.synonyms ? currentWord.synonyms.split(',').map((s) => s.trim()) : [],
+        synonyms: currentWord.synonyms ? currentWord.synonyms.split(',').map((s: string) => s.trim()) : [],
         example: currentWord.example || null,
         date: date || '',
         createdAt: new Date().toISOString(),
@@ -310,9 +312,12 @@ function VocabularyInput() {
       }, 3000);
     } catch (error) {
       console.error('Failed to delete word:', error);
-      setToastMessage(
-        `Failed to delete word: ${error instanceof ApiError ? error.message : 'Unknown error'}`,
-      );
+      const errorMessage = error instanceof ApiError 
+        ? error.message 
+        : error instanceof Error 
+          ? error.message 
+          : 'Unknown error';
+      setToastMessage(`Failed to delete word: ${errorMessage}`);
       setToastType('error');
       setShowToast(true);
       setTimeout(() => {
@@ -362,9 +367,12 @@ function VocabularyInput() {
       }, 3000);
     } catch (error) {
       console.error('Failed to save words:', error);
-      setToastMessage(
-        `Failed to save words: ${error instanceof ApiError ? error.message : 'Unknown error'}`,
-      );
+      const errorMessage = error instanceof ApiError 
+        ? error.message 
+        : error instanceof Error 
+          ? error.message 
+          : 'Unknown error';
+      setToastMessage(`Failed to save words: ${errorMessage}`);
       setToastType('error');
       setShowToast(true);
       setTimeout(() => {
@@ -532,7 +540,6 @@ function VocabularyInput() {
         <Toast
           message={toastMessage}
           isVisible={showToast}
-          onClose={() => setShowToast(false)}
           type={toastType}
         />
     </>

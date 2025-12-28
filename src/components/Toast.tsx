@@ -2,12 +2,11 @@
 import { css } from '@emotion/react';
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { theme } from '/Users/junoshon/Developments/band9-web/src/styles/theme';
+import { theme } from '@/styles/theme';
 
 interface ToastProps {
   message: string;
   isVisible: boolean;
-  onClose: () => void;
   type?: 'success' | 'error' | 'info';
 }
 
@@ -57,7 +56,7 @@ const toastVariants = {
   },
 };
 
-const Toast = memo(function Toast({ message, isVisible, onClose, type = 'success' }: ToastProps) {
+const Toast = memo(function Toast({ message, isVisible, type = 'success' }: ToastProps) {
   // message가 없거나 isVisible이 false면 표시하지 않음
   if (!message || !isVisible) {
     return null;

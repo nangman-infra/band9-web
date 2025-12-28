@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
-import { theme } from '/Users/junoshon/Developments/band9-web/src/styles/theme';
+import { theme } from '@/styles/theme';
 
 const navStyle = css`
   position: fixed;
