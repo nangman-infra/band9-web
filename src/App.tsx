@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import GlobalStyles from '@/styles/global.tsx';
+import Navigation from '@/components/Navigation.tsx';
 import Home from '@/pages/Home.tsx';
 import Reading from '@/pages/Reading.tsx';
 import ReadingPractice from '@/pages/ReadingPractice.tsx';
@@ -36,6 +37,7 @@ function App() {
   return (
     <BrowserRouter>
       <GlobalStyles />
+      <Navigation />
       <AppRoutes />
     </BrowserRouter>
   );

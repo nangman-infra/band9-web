@@ -12,6 +12,7 @@ const containerStyle = css`
   justify-content: center;
   background: #F5F7FA;
   padding: 2rem;
+  padding-top: 6rem; /* 네비게이션 높이만큼 여백 추가 */
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 

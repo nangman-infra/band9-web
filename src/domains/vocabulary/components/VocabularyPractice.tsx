@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Word } from '/Users/junoshon/Developments/band9-web/src/domains/vocabulary/types.ts';
+import { getWordsByDate } from '/Users/junoshon/Developments/band9-web/src/domains/vocabulary/api';
+import { ApiError } from '/Users/junoshon/Developments/band9-web/src/utils/api';
 
 const containerStyle = css`
   min-height: 100vh;
@@ -11,6 +13,7 @@ const containerStyle = css`
   flex-direction: column;
   background: #F5F7FA;
   padding: 2rem;
+  padding-top: 6rem; /* 네비게이션 높이만큼 여백 추가 */
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
@@ -192,26 +195,43 @@ function VocabularyPractice() {
   const [userAnswer, setUserAnswer] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [usedOptions, setUsedOptions] = useState<Set<string>>(new Set());
+  const [words, setWords] = useState<Word[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // TODO: 백엔드에서 받아올 데이터 (임시 더미 데이터)
-  const [words] = useState<Word[]>([
-    {
-      id: '1',
-      word: 'beautiful',
-      meaning: '아름다운',
-      partOfSpeech: 'adjective',
-      synonyms: ['pretty', 'gorgeous'],
-      example: 'She is a beautiful woman.',
-    },
-    {
-      id: '2',
-      word: 'intelligent',
-      meaning: '똑똑한',
-      partOfSpeech: 'adjective',
-      synonyms: ['smart', 'clever'],
-      example: 'He is an intelligent student.',
-    },
-  ]);
+  useEffect(() => {
+    if (date) {
+      loadWords();
+    }
+  }, [date]);
+
+  const loadWords = async () => {
+    if (!date) return;
+
+    try {
+      setIsLoading(true);
+      const fetchedWords = await getWordsByDate(date);
+      setWords(fetchedWords);
+
+      // 빈 배열은 정상적인 응답이므로 에러로 처리하지 않음
+      // 단어가 없어도 연습 페이지는 표시하되, 사용자에게 알림
+      if (fetchedWords.length > 0) {
+        setCurrentIndex(0);
+        setUserAnswer('');
+        setShowResult(false);
+        setUsedOptions(new Set());
+      }
+    } catch (error) {
+      console.error('Failed to load words:', error);
+      // HTTP 200이어도 응답 파싱 실패 시 에러 처리
+      if (error instanceof ApiError) {
+        alert(`Failed to load words: ${error.message}`);
+      } else {
+        alert('Failed to load words: Unknown error');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split('-').map(Number);
@@ -253,7 +273,25 @@ function VocabularyPractice() {
     navigate('/vocabulary');
   };
 
-  if (!currentWord) {
+  if (isLoading) {
+    return (
+      <div css={containerStyle}>
+        <div css={headerStyle}>
+          <h1 css={titleStyle}>Vocabulary Practice</h1>
+          <button css={backButtonStyle} onClick={handleBackClick} type="button">
+            ← Calendar
+          </button>
+        </div>
+        <div css={contentStyle}>
+          <div css={practiceCardStyle}>
+            <p style={{ textAlign: 'center', color: '#666' }}>Loading words...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentWord || words.length === 0) {
     return (
       <div css={containerStyle}>
         <div css={headerStyle}>
@@ -271,10 +309,9 @@ function VocabularyPractice() {
     );
   }
 
-  const exampleWithBlank = currentWord.example.replace(
-    currentWord.word,
-    '______',
-  );
+  const exampleWithBlank = currentWord.example
+    ? currentWord.example.replace(currentWord.word, '______')
+    : `The word is ${currentWord.word}.`;
 
   const allOptions = [
     currentWord.word,
