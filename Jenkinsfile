@@ -61,9 +61,13 @@ pipeline {
                     export NVM_DIR="$HOME/.nvm"
                     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                     
-                    # 🔍 [핵심 추가] 빌드 직전에 환경 변수 파일을 활성화합니다.
-                    # .env.dev 파일이 레포지토리에 포함되어 있다고 가정합니다.
-                    cp .env.dev .env
+                    # 🔍 1. .env 파일을 직접 생성합니다 (가장 확실한 방법)
+                    echo "VITE_API_URL=http://172.16.0.8:3000/api/v1" > .env
+                    echo "VITE_API_PREFIX=/api/v1" >> .env
+                    
+                    # 🔍 2. 파일이 잘 만들어졌는지 로그로 확인
+                    echo ">>> 생성된 .env 내용 확인:"
+                    cat .env
                     
                     pnpm install --no-frozen-lockfile
                     pnpm build
