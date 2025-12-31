@@ -54,14 +54,17 @@ pipeline {
             }
         }
 
-        stage('2. Node.js 빌드 (pnpm)') {
+       stage('2. Node.js 빌드 (pnpm)') {
             steps {
                 script { failureReason = "2단계(Node.js 빌드) 실패" }
-                // 에이전트 환경에 따라 nvm 경로가 다를 수 있으니 주의하세요.
                 sh '''#!/bin/bash
                     export NVM_DIR="$HOME/.nvm"
                     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    # 만약 nvm이 없다면 에이전트 노드에 직접 설치되어 있어야 합니다.
+                    
+                    # 🔍 [핵심 추가] 빌드 직전에 환경 변수 파일을 활성화합니다.
+                    # .env.dev 파일이 레포지토리에 포함되어 있다고 가정합니다.
+                    cp .env.dev .env
+                    
                     pnpm install --no-frozen-lockfile
                     pnpm build
                 '''
