@@ -47,3 +47,4 @@ export function getApiUrl(endpoint: string): string {
   return `${baseUrl}/${cleanPrefix}/${cleanEndpoint}`;
 }
 
+
