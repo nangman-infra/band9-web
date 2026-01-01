@@ -455,14 +455,24 @@ function VocabularyInput() {
             <label css={labelStyle} htmlFor="partOfSpeech">
               Part of Speech
             </label>
-            <input
+            <select
               id="partOfSpeech"
               css={inputStyle}
-              type="text"
-              value={currentWord.partOfSpeech}
+              value={currentWord.partOfSpeech || ''}
               onChange={(e) => handleInputChange('partOfSpeech', e.target.value)}
-              placeholder="e.g., adjective"
-            />
+            >
+              <option value="">Select part of speech</option>
+              <option value="noun">Noun</option>
+              <option value="verb">Verb</option>
+              <option value="adjective">Adjective</option>
+              <option value="adverb">Adverb</option>
+              <option value="pronoun">Pronoun</option>
+              <option value="preposition">Preposition</option>
+              <option value="conjunction">Conjunction</option>
+              <option value="interjection">Interjection</option>
+              <option value="determiner">Determiner</option>
+              <option value="article">Article</option>
+            </select>
           </div>
           <div css={formGroupStyle}>
             <label css={labelStyle} htmlFor="synonyms">
