@@ -234,7 +234,14 @@ function VocabularyInput() {
     try {
       setIsLoading(true);
       const fetchedWords = await getWordsByDate(date);
-      setWords(fetchedWords);
+      // synonyms가 배열이 아닌 경우 배열로 변환
+      const normalizedWords = fetchedWords.map((word) => ({
+        ...word,
+        synonyms: Array.isArray(word.synonyms) 
+          ? word.synonyms 
+          : (word.synonyms ? [word.synonyms] : []),
+      }));
+      setWords(normalizedWords);
       // 빈 배열은 정상적인 응답이므로 에러로 처리하지 않음
     } catch (error) {
       console.error('Failed to load words:', error);
@@ -344,13 +351,20 @@ function VocabularyInput() {
       console.log('Starting save...');
 
       // Word를 API 형식으로 변환
-      const wordsToSave = words.map((word) => ({
-        word: word.word,
-        meaning: word.meaning,
-        partOfSpeech: word.partOfSpeech || undefined,
-        synonyms: word.synonyms.length > 0 ? word.synonyms.join(', ') : undefined,
-        example: word.example || undefined,
-      }));
+      const wordsToSave = words.map((word) => {
+        // synonyms가 배열인지 확인하고 처리
+        const synonymsArray = Array.isArray(word.synonyms) 
+          ? word.synonyms 
+          : (word.synonyms ? [word.synonyms] : []);
+        
+        return {
+          word: word.word,
+          meaning: word.meaning,
+          partOfSpeech: word.partOfSpeech || undefined,
+          synonyms: synonymsArray.length > 0 ? synonymsArray.join(', ') : undefined,
+          example: word.example || undefined,
+        };
+      });
 
       const savedWords = await createWords(date, wordsToSave);
       setWords(savedWords);
@@ -516,8 +530,13 @@ function VocabularyInput() {
                     {word.partOfSpeech && (
                       <div css={wordDetailStyle}>Part of Speech: {word.partOfSpeech}</div>
                     )}
-                    {word.synonyms && word.synonyms.length > 0 && (
-                      <div css={wordDetailStyle}>Synonyms: {word.synonyms.join(', ')}</div>
+                    {word.synonyms && 
+                     (Array.isArray(word.synonyms) ? word.synonyms.length > 0 : word.synonyms) && (
+                      <div css={wordDetailStyle}>
+                        Synonyms: {Array.isArray(word.synonyms) 
+                          ? word.synonyms.join(', ') 
+                          : word.synonyms}
+                      </div>
                     )}
                     {word.example && (
                       <div css={wordDetailStyle}>Example: {word.example}</div>

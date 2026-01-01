@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Word } from '@/domains/vocabulary/types';
 import { getWordsByDate } from '@/domains/vocabulary/api';
 import { ApiError } from '@/utils/api';
@@ -134,6 +134,59 @@ const dateDisplayStyle = css`
   margin-top: 0.5rem;
 `;
 
+const dialogOverlayStyle = css`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+`;
+
+const dialogStyle = css`
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  text-align: center;
+`;
+
+const dialogTitleStyle = css`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #004C97;
+  margin-bottom: 1rem;
+`;
+
+const dialogMessageStyle = css`
+  font-size: 1.125rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+`;
+
+const dialogButtonStyle = css`
+  background: #004C97;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #0066CC;
+  }
+`;
+
 
 function VocabularyPractice() {
   const { date } = useParams<{ date: string }>();
@@ -143,6 +196,7 @@ function VocabularyPractice() {
   const [showResult, setShowResult] = useState(false);
   const [words, setWords] = useState<Word[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
 
   useEffect(() => {
     if (date) {
@@ -207,8 +261,13 @@ function VocabularyPractice() {
       setUserAnswer('');
       setShowResult(false);
     } else {
-      alert('모든 단어를 완료했습니다! 🎉');
+      setShowCompletionDialog(true);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setShowCompletionDialog(false);
+    handleBackClick();
   };
 
   const handleBackClick = () => {
@@ -335,6 +394,39 @@ function VocabularyPractice() {
           </div>
         </motion.div>
       </div>
+
+      {/* 완료 다이얼로그 */}
+      <AnimatePresence>
+        {showCompletionDialog && (
+          <motion.div
+            css={dialogOverlayStyle}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={handleCloseDialog}
+          >
+            <motion.div
+              css={dialogStyle}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div css={dialogTitleStyle}>🎉 완료!</div>
+              <div css={dialogMessageStyle}>
+                모든 단어를 완료했습니다!
+                <br />
+                총 {words.length}개의 단어를 연습했습니다.
+              </div>
+              <button css={dialogButtonStyle} onClick={handleCloseDialog} type="button">
+                확인
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
