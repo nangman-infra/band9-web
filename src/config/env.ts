@@ -14,7 +14,11 @@ interface EnvConfig {
 function getEnvConfig(): EnvConfig {
   const mode = import.meta.env.MODE || 'development';
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://172.16.0.8:3000';
-  const apiPrefix = import.meta.env.VITE_API_PREFIX || '/api/v1';
+  // 환경 변수에서 프리픽스를 가져오며, 없으면 에러 발생
+  const apiPrefix = import.meta.env.VITE_API_PREFIX;
+  if (!apiPrefix) {
+    throw new Error('VITE_API_PREFIX environment variable is required');
+  }
 
   return {
     apiBaseUrl,
