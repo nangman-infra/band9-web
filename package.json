@@ -6,6 +6,7 @@
     "dev": "vite --mode development",
     "dev:staging": "vite --mode staging",
     "build": "tsc && vite build --mode production",
+    "build:development": "tsc && vite build --mode development",
     "build:staging": "tsc && vite build --mode staging",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
