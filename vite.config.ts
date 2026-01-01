@@ -7,33 +7,10 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '');
   
-  // Get API base URL and prefix from environment variables
+  // Get API base URL from environment variables
+  // 백엔드에서 글로벌 프리픽스가 제거되어 프리픽스 없이 직접 호출
+  // 개발 모드에서도 CORS가 활성화되어 있어 직접 호출하므로 proxy 불필요
   const apiBaseUrl = env.VITE_API_BASE_URL || 'http://localhost:3000';
-  const apiPrefix = env.VITE_API_PREFIX;
-  // Remove leading slash from prefix for proxy path
-  const proxyPath = apiPrefix ? (apiPrefix.startsWith('/') ? apiPrefix : `/${apiPrefix}`) : null;
-
-  // Proxy 설정 (환경 변수가 있을 때만 활성화)
-  const proxyConfig = proxyPath ? {
-    [proxyPath]: {
-      target: apiBaseUrl,
-      changeOrigin: true,
-      // Only proxy in development mode
-      configure: (proxy: any, _options: any) => {
-        if (mode === 'development') {
-          proxy.on('error', (err: Error, _req: any, _res: any) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq: any, req: any, _res: any) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes: any, req: any, _res: any) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
-        }
-      },
-    },
-  } : {};
 
   return {
     plugins: [react({
@@ -42,9 +19,20 @@ export default defineConfig(({ mode }) => {
         plugins: ['@emotion/babel-plugin'],
       },
     })],
-    server: {
-      proxy: proxyConfig,
-    },
+    // 개발 모드에서도 CORS가 활성화되어 있어 proxy 불필요
+    // 필요시 아래 주석을 해제하여 proxy 사용 가능
+    // server: {
+    //   proxy: {
+    //     '/users': {
+    //       target: apiBaseUrl,
+    //       changeOrigin: true,
+    //     },
+    //     '/vocabulary': {
+    //       target: apiBaseUrl,
+    //       changeOrigin: true,
+    //     },
+    //   },
+    // },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

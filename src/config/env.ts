@@ -4,7 +4,6 @@
 
 interface EnvConfig {
   apiBaseUrl: string;
-  apiPrefix: string;
   mode: string;
   isDevelopment: boolean;
   isStaging: boolean;
@@ -14,15 +13,9 @@ interface EnvConfig {
 function getEnvConfig(): EnvConfig {
   const mode = import.meta.env.MODE || 'development';
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://172.16.0.8:3000';
-  // 환경 변수에서 프리픽스를 가져오며, 없으면 에러 발생
-  const apiPrefix = import.meta.env.VITE_API_PREFIX;
-  if (!apiPrefix) {
-    throw new Error('VITE_API_PREFIX environment variable is required');
-  }
 
   return {
     apiBaseUrl,
-    apiPrefix,
     mode,
     isDevelopment: mode === 'development',
     isStaging: mode === 'staging',
@@ -33,17 +26,17 @@ function getEnvConfig(): EnvConfig {
 export const env = getEnvConfig();
 
 // Helper function to build full API URL
+// 백엔드에서 글로벌 프리픽스가 제거되어 프리픽스 없이 직접 호출
 export function getApiUrl(endpoint: string): string {
   // Remove leading slash if present to avoid double slashes
-  const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-  const cleanPrefix = env.apiPrefix.startsWith('/') ? env.apiPrefix.slice(1) : env.apiPrefix;
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   
-  // Build full URL (development 모드에서도 CORS가 활성화되어 있어 직접 호출)
+  // Build full URL (프리픽스 없이 직접 호출)
   const baseUrl = env.apiBaseUrl.endsWith('/') 
     ? env.apiBaseUrl.slice(0, -1) 
     : env.apiBaseUrl;
   
-  return `${baseUrl}/${cleanPrefix}/${cleanEndpoint}`;
+  return `${baseUrl}${cleanEndpoint}`;
 }
 
 
