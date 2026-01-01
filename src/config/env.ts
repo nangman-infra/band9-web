@@ -13,7 +13,7 @@ interface EnvConfig {
 
 function getEnvConfig(): EnvConfig {
   const mode = import.meta.env.MODE || 'development';
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://172.16.0.8:3000';
   const apiPrefix = import.meta.env.VITE_API_PREFIX || '/api/v1';
 
   return {
@@ -34,17 +34,13 @@ export function getApiUrl(endpoint: string): string {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
   const cleanPrefix = env.apiPrefix.startsWith('/') ? env.apiPrefix.slice(1) : env.apiPrefix;
   
-  // In development, use proxy (relative URL)
-  if (env.isDevelopment) {
-    return `/${cleanPrefix}/${cleanEndpoint}`;
-  }
-  
-  // In staging/production, use full URL
+  // Build full URL (development 모드에서도 CORS가 활성화되어 있어 직접 호출)
   const baseUrl = env.apiBaseUrl.endsWith('/') 
     ? env.apiBaseUrl.slice(0, -1) 
     : env.apiBaseUrl;
   
   return `${baseUrl}/${cleanPrefix}/${cleanEndpoint}`;
 }
+
 
 

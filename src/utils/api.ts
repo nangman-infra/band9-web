@@ -4,8 +4,7 @@ import { getApiUrl } from '@/config/env';
 export interface ApiErrorResponse {
   statusCode: number;
   message: string;
-  path: string;
-  timestamp: string;
+  error: string;
 }
 
 export interface ApiResponse<T = unknown> {
