@@ -224,8 +224,12 @@ function VocabularyInput() {
 
   useEffect(() => {
     if (date) {
+      // 컴포넌트가 마운트되거나 date가 변경될 때만 단어 로드
+      // 기존 단어 목록을 초기화하고 새로 로드하여 중복 방지
+      setWords([]);
       loadWords();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   const loadWords = async () => {
@@ -262,6 +266,23 @@ function VocabularyInput() {
 
   const handleAddWord = () => {
     if (currentWord.word && currentWord.meaning) {
+      // 중복 체크: 같은 단어와 뜻이 이미 리스트에 있는지 확인
+      const isDuplicate = words.some(
+        (word) => 
+          word.word.toLowerCase().trim() === currentWord.word.toLowerCase().trim() &&
+          word.meaning.toLowerCase().trim() === currentWord.meaning.toLowerCase().trim()
+      );
+
+      if (isDuplicate) {
+        setToastMessage(`Word "${currentWord.word}" is already in the list.`);
+        setToastType('error');
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+        return;
+      }
+
       // 임시 ID로 로컬 상태에 추가 (저장 전까지)
       const tempWord: Word = {
         id: `temp-${Date.now()}`,
@@ -350,8 +371,23 @@ function VocabularyInput() {
       setIsSaving(true);
       console.log('Starting save...');
 
-      // Word를 API 형식으로 변환
-      const wordsToSave = words.map((word) => {
+      // 이미 저장된 단어(서버 ID를 가진 단어)와 새로 추가한 단어(임시 ID)를 구분
+      const alreadySavedWords = words.filter((word) => !word.id.startsWith('temp-'));
+      const newWords = words.filter((word) => word.id.startsWith('temp-'));
+
+      if (newWords.length === 0) {
+        // 새로 추가한 단어가 없으면 저장할 필요 없음
+        setToastMessage('No new words to save.');
+        setToastType('info');
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+        return;
+      }
+
+      // 새로 추가한 단어만 API 형식으로 변환하여 저장
+      const wordsToSave = newWords.map((word) => {
         // synonyms가 배열인지 확인하고 처리
         const synonymsArray = Array.isArray(word.synonyms) 
           ? word.synonyms 
@@ -367,7 +403,12 @@ function VocabularyInput() {
       });
 
       const savedWords = await createWords(date, wordsToSave);
-      setWords(savedWords);
+      
+      // 이미 저장된 단어와 새로 저장된 단어를 합침
+      // 중복 방지를 위해 ID 기준으로 필터링
+      const existingIds = new Set(alreadySavedWords.map((w) => w.id));
+      const newSavedWords = savedWords.filter((w) => !existingIds.has(w.id));
+      setWords([...alreadySavedWords, ...newSavedWords]);
       
       console.log('Setting toast message...');
       setToastMessage('Words saved successfully!');
