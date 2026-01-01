@@ -54,31 +54,6 @@ const contentStyle = css`
   margin: 0 auto;
 `;
 
-const modeSelectorStyle = css`
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  background: white;
-  border-radius: 12px;
-  padding: 0.5rem;
-`;
-
-const modeButtonStyle = (isActive: boolean) => css`
-  flex: 1;
-  background: ${isActive ? '#004C97' : 'transparent'};
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  color: ${isActive ? 'white' : '#333'};
-  transition: all 0.2s;
-
-  &:hover {
-    background: ${isActive ? '#0066CC' : '#f0f0f0'};
-  }
-`;
 
 const practiceCardStyle = css`
   background: white;
@@ -97,15 +72,19 @@ const questionStyle = css`
 `;
 
 const blankInputStyle = css`
-  display: inline-block;
-  min-width: 200px;
-  padding: 0.5rem 1rem;
+  width: 100%;
+  padding: 1rem;
   border: 2px dashed #004C97;
   border-radius: 8px;
-  margin: 0 0.5rem;
   font-size: 1.25rem;
-  text-align: center;
   background: #f0f7ff;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #0066CC;
+    background: white;
+  }
 `;
 
 const filledInputStyle = css`
@@ -114,36 +93,6 @@ const filledInputStyle = css`
   background: white;
 `;
 
-const optionsContainerStyle = css`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 2rem;
-`;
-
-const optionButtonStyle = (isUsed: boolean) => css`
-  background: ${isUsed ? '#e0e0e0' : '#004C97'};
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  cursor: ${isUsed ? 'not-allowed' : 'pointer'};
-  font-size: 1rem;
-  font-weight: 600;
-  color: ${isUsed ? '#999' : 'white'};
-  transition: all 0.2s;
-  opacity: ${isUsed ? 0.5 : 1};
-
-  &:hover {
-    background: ${isUsed ? '#e0e0e0' : '#0066CC'};
-    transform: ${isUsed ? 'none' : 'translateY(-2px)'};
-  }
-`;
-
-const dragOptionStyle = (isDragging: boolean) => css`
-  ${optionButtonStyle(false)}
-  cursor: ${isDragging ? 'grabbing' : 'grab'};
-  background: ${isDragging ? '#0066CC' : '#004C97'};
-`;
 
 const exampleTextStyle = css`
   font-size: 1.125rem;
@@ -185,16 +134,13 @@ const dateDisplayStyle = css`
   margin-top: 0.5rem;
 `;
 
-type PracticeMode = 'blank' | 'drag';
 
 function VocabularyPractice() {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<PracticeMode>('blank');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [showResult, setShowResult] = useState(false);
-  const [usedOptions, setUsedOptions] = useState<Set<string>>(new Set());
   const [words, setWords] = useState<Word[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -218,7 +164,6 @@ function VocabularyPractice() {
         setCurrentIndex(0);
         setUserAnswer('');
         setShowResult(false);
-        setUsedOptions(new Set());
       }
     } catch (error) {
       console.error('Failed to load words:', error);
@@ -241,20 +186,16 @@ function VocabularyPractice() {
   };
 
   const currentWord = words[currentIndex];
-  const isCorrect = userAnswer.toLowerCase() === currentWord?.word.toLowerCase();
+  // 사용자가 입력한 뜻과 정답 비교 (대소문자 구분 없이, 공백 제거)
+  const isCorrect = currentWord 
+    ? userAnswer.trim().toLowerCase() === currentWord.meaning.trim().toLowerCase()
+    : false;
 
   const handleBlankInput = (value: string) => {
     setUserAnswer(value);
     setShowResult(false);
   };
 
-  const handleDragOptionClick = (option: string) => {
-    if (!usedOptions.has(option)) {
-      setUserAnswer(option);
-      setUsedOptions((prev) => new Set([...prev, option]));
-      setShowResult(false);
-    }
-  };
 
   const handleCheck = () => {
     setShowResult(true);
@@ -265,9 +206,8 @@ function VocabularyPractice() {
       setCurrentIndex((prev) => prev + 1);
       setUserAnswer('');
       setShowResult(false);
-      setUsedOptions(new Set());
     } else {
-      alert('All words completed!');
+      alert('모든 단어를 완료했습니다! 🎉');
     }
   };
 
@@ -311,18 +251,6 @@ function VocabularyPractice() {
     );
   }
 
-  const exampleWithBlank = currentWord.example
-    ? currentWord.example.replace(currentWord.word, '______')
-    : `The word is ${currentWord.word}.`;
-
-  const allOptions = [
-    currentWord.word,
-    ...currentWord.synonyms,
-    ...words
-      .filter((w) => w.id !== currentWord.id)
-      .map((w) => w.word)
-      .slice(0, 2),
-  ].sort(() => Math.random() - 0.5);
 
   return (
     <motion.div
@@ -342,32 +270,7 @@ function VocabularyPractice() {
           </button>
       </div>
       <div css={contentStyle}>
-        <div css={modeSelectorStyle}>
-          <button
-            css={modeButtonStyle(mode === 'blank')}
-            onClick={() => {
-              setMode('blank');
-              setUserAnswer('');
-              setShowResult(false);
-              setUsedOptions(new Set());
-            }}
-            type="button"
-          >
-            Fill in the Blank
-          </button>
-          <button
-            css={modeButtonStyle(mode === 'drag')}
-            onClick={() => {
-              setMode('drag');
-              setUserAnswer('');
-              setShowResult(false);
-              setUsedOptions(new Set());
-            }}
-            type="button"
-          >
-            Drag & Drop
-          </button>
-        </div>
+        {/* MVP: 모드 선택 제거 */}
 
         <motion.div
           css={practiceCardStyle}
@@ -375,63 +278,37 @@ function VocabularyPractice() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
         >
+          {/* MVP: 영어 단어 표시 */}
           <div css={questionStyle}>
-            Meaning: {currentWord.meaning}
+            Word: {currentWord.word}
             {currentWord.partOfSpeech && ` (${currentWord.partOfSpeech})`}
           </div>
 
-          {mode === 'blank' ? (
-            <>
-              <div css={exampleTextStyle}>
-                {exampleWithBlank.split('______').map((part: string, index: number, array: string[]) => (
-                  <span key={index}>
-                    {part}
-                    {index < array.length - 1 && (
-                      <input
-                        css={userAnswer ? filledInputStyle : blankInputStyle}
-                        type="text"
-                        value={userAnswer}
-                        onChange={(e) => handleBlankInput(e.target.value)}
-                        placeholder="Enter word"
-                      />
-                    )}
-                  </span>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              <div css={exampleTextStyle}>
-                {exampleWithBlank.split('______').map((part: string, index: number, array: string[]) => (
-                  <span key={index}>
-                    {part}
-                    {index < array.length - 1 && (
-                      <span css={userAnswer ? filledInputStyle : blankInputStyle}>
-                        {userAnswer || 'Drag here'}
-                      </span>
-                    )}
-                  </span>
-                ))}
-              </div>
-              <div css={optionsContainerStyle}>
-                {allOptions.map((option) => {
-                  const isUsed = usedOptions.has(option);
-                  return (
-                    <motion.button
-                      key={option}
-                      css={dragOptionStyle(false)}
-                      onClick={() => handleDragOptionClick(option)}
-                      type="button"
-                      disabled={isUsed}
-                      whileHover={{ scale: isUsed ? 1 : 1.05 }}
-                      whileTap={{ scale: isUsed ? 1 : 0.95 }}
-                    >
-                      {option}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </>
+          {/* MVP: 뜻 입력 필드 */}
+          <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
+            <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
+              Meaning:
+            </label>
+            <input
+              css={userAnswer ? filledInputStyle : blankInputStyle}
+              type="text"
+              value={userAnswer}
+              onChange={(e) => handleBlankInput(e.target.value)}
+              placeholder="단어의 뜻을 입력하세요"
+              disabled={showResult}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && userAnswer && !showResult) {
+                  handleCheck();
+                }
+              }}
+            />
+          </div>
+
+          {/* 예문 표시 (있는 경우) */}
+          {currentWord.example && (
+            <div css={exampleTextStyle}>
+              <strong>Example:</strong> {currentWord.example}
+            </div>
           )}
 
           {showResult && (
@@ -440,7 +317,7 @@ function VocabularyPractice() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              {isCorrect ? 'Correct! 🎉' : `Incorrect. Answer: ${currentWord.word}`}
+              {isCorrect ? 'Correct! 🎉' : `Incorrect. Answer: ${currentWord.meaning}`}
             </motion.div>
           )}
 
