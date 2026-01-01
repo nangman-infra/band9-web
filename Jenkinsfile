@@ -59,18 +59,14 @@ pipeline {
                 script { failureReason = "2단계(Node.js 빌드) 실패" }
                 sh '''#!/bin/bash
                     export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    
-                    # 🔍 1. .env.production 파일을 직접 생성합니다 (production 모드로 빌드하므로)
-                    echo "VITE_API_BASE_URL=http://172.16.0.8:3000" > .env.production
-                    echo "VITE_API_PREFIX=/api/v1" >> .env.production
+                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"                
                     
                     # 🔍 2. 파일이 잘 만들어졌는지 로그로 확인
-                    echo ">>> 생성된 .env.production 내용 확인:"
-                    cat .env.production
+                    echo ">>> 생성된 .env 내용 확인:"
+                    cat .env
                     
                     pnpm install --no-frozen-lockfile
-                    pnpm build
+                    pnpm build:development
                 '''
             }
         }
