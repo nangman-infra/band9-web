@@ -66,9 +66,11 @@ function Vocabulary() {
     navigate('/');
   };
 
-  const handleDateSelect = (date: string, mode: 'input' | 'practice') => {
+  const handleDateSelect = (date: string, mode: 'input' | 'practice' | 'view') => {
     if (mode === 'input') {
       navigate(`/vocabulary/${date}/input`);
+    } else if (mode === 'view') {
+      navigate(`/vocabulary/${date}/view`);
     } else {
       navigate(`/vocabulary/${date}/practice`);
     }

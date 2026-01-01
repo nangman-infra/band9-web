@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Word } from '@/domains/vocabulary/types';
 import { getWordsByDate } from '@/domains/vocabulary/api';
 import { ApiError } from '@/utils/api';
+import { PracticeCardSkeleton } from '@/components/PracticeCardSkeleton';
 
 const containerStyle = css`
   min-height: 100vh;
@@ -284,9 +285,7 @@ function VocabularyPractice() {
           </button>
         </div>
         <div css={contentStyle}>
-          <div css={practiceCardStyle}>
-            <p style={{ textAlign: 'center', color: '#666' }}>Loading words...</p>
-          </div>
+          <PracticeCardSkeleton />
         </div>
       </div>
     );

@@ -133,7 +133,7 @@ const actionButtonStyle = css`
 `;
 
 interface CalendarProps {
-  onDateSelect: (date: string, mode: 'input' | 'practice') => void;
+  onDateSelect: (date: string, mode: 'input' | 'practice' | 'view') => void;
 }
 
 function Calendar({ onDateSelect }: CalendarProps) {
@@ -182,6 +182,13 @@ function Calendar({ onDateSelect }: CalendarProps) {
     if (selectedDate) {
       onDateSelect(selectedDate, 'practice');
       navigate(`/vocabulary/${selectedDate}/practice`);
+    }
+  };
+
+  const handleViewClick = () => {
+    if (selectedDate) {
+      onDateSelect(selectedDate, 'view');
+      navigate(`/vocabulary/${selectedDate}/view`);
     }
   };
 
@@ -258,6 +265,9 @@ function Calendar({ onDateSelect }: CalendarProps) {
         >
           <button css={actionButtonStyle} onClick={handleInputClick} type="button">
             Input Words
+          </button>
+          <button css={actionButtonStyle} onClick={handleViewClick} type="button">
+            View Words
           </button>
           <button css={actionButtonStyle} onClick={handlePracticeClick} type="button">
             Practice

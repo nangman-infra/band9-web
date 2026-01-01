@@ -7,6 +7,7 @@ import type { WordInput, Word } from '@/domains/vocabulary/types';
 import { createWords, getWordsByDate, deleteWord } from '@/domains/vocabulary/api';
 import { ApiError } from '@/utils/api';
 import Toast from '@/components/Toast';
+import { WordCardSkeleton } from '@/components/WordCardSkeleton';
 
 const containerStyle = css`
   min-height: 100vh;
@@ -561,7 +562,11 @@ function VocabularyInput() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <p style={{ textAlign: 'center', color: '#666' }}>Loading words...</p>
+            <div css={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+              {[...Array(3)].map((_, index) => (
+                <WordCardSkeleton key={index} />
+              ))}
+            </div>
           </motion.div>
         ) : (
           words.length > 0 && (

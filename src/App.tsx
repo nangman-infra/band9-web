@@ -13,6 +13,7 @@ import Listening from '@/pages/Listening.tsx';
 import Speaking from '@/pages/Speaking.tsx';
 import Vocabulary from '@/pages/Vocabulary.tsx';
 import VocabularyInput from '@/pages/VocabularyInput.tsx';
+import VocabularyView from '@/pages/VocabularyView.tsx';
 import VocabularyPractice from '@/pages/VocabularyPractice.tsx';
 
 const AUTH_STORAGE_KEY = 'band9_authenticated';
@@ -31,6 +32,7 @@ function AppRoutes() {
         <Route path="/speaking" element={<Speaking />} />
         <Route path="/vocabulary" element={<Vocabulary />} />
         <Route path="/vocabulary/:date/input" element={<VocabularyInput />} />
+        <Route path="/vocabulary/:date/view" element={<VocabularyView />} />
         <Route path="/vocabulary/:date/practice" element={<VocabularyPractice />} />
       </Routes>
     </AnimatePresence>
