@@ -42,8 +42,8 @@ function App() {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // localStorage에서 인증 상태 확인
-    const authStatus = localStorage.getItem(AUTH_STORAGE_KEY);
+    // sessionStorage에서 인증 상태 확인 (탭을 닫으면 자동으로 만료됨)
+    const authStatus = sessionStorage.getItem(AUTH_STORAGE_KEY);
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
@@ -51,7 +51,8 @@ function App() {
   }, []);
 
   const handleAuthSuccess = () => {
-    localStorage.setItem(AUTH_STORAGE_KEY, 'true');
+    // sessionStorage에 저장 (브라우저 탭을 닫으면 자동으로 삭제됨)
+    sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
     setIsAuthenticated(true);
   };
 
