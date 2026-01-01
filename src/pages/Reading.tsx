@@ -70,12 +70,6 @@ const adminButtonStyle = css`
   }
 `;
 
-const buttonGroupStyle = css`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-`;
-
 const pageVariants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },

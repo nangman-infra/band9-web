@@ -227,8 +227,6 @@ const dateDisplayStyle = css`
   margin-top: 0.5rem;
 `;
 
-const ANIMATION_DURATION_MS = 300;
-
 function ReadingPractice() {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();

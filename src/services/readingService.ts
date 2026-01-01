@@ -83,17 +83,10 @@ export const readingService = {
 
   // [어드민] 지문 생성
   createPassage: async (dto: CreateReadingPassageDto): Promise<ReadingPassage> => {
-    const { getApiUrl } = await import('@/config/env');
-    const url = getApiUrl('reading/admin/passages');
-    console.log('Creating passage - URL:', url);
-    console.log('Creating passage - DTO:', JSON.stringify(dto, null, 2));
-    
     const result = await apiFetch<ReadingPassage>('reading/admin/passages', {
       method: 'POST',
       body: JSON.stringify(dto),
     });
-    
-    console.log('Create passage response:', result);
     
     if (!result.data) {
       throw new Error('Failed to create passage: No data returned');
