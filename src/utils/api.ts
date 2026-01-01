@@ -36,6 +36,11 @@ export async function apiFetch<T>(
 ): Promise<ApiResponse<T>> {
   const url = getApiUrl(endpoint);
   
+  console.log(`[API] ${options?.method || 'GET'} ${url}`);
+  if (options?.body) {
+    console.log('[API] Request body:', options.body);
+  }
+  
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -44,11 +49,15 @@ export async function apiFetch<T>(
     },
   });
 
+  console.log(`[API] Response status: ${response.status} ${response.statusText}`);
+
   const data: ApiResponse<T> = await response.json();
+  console.log('[API] Response data:', data);
 
   // HTTP 상태 코드 확인
   if (!response.ok) {
     const errorMessage = data.error?.message || `HTTP error! status: ${response.status}`;
+    console.error('[API] Error:', errorMessage, data);
     throw new ApiError(
       errorMessage,
       response.status,
@@ -59,6 +68,7 @@ export async function apiFetch<T>(
   // 응답 본문의 success 필드 확인 (추가 안전장치)
   if (!data.success) {
     const errorMessage = data.error?.message || 'API request failed';
+    console.error('[API] Success false:', errorMessage, data);
     throw new ApiError(
       errorMessage,
       response.status,

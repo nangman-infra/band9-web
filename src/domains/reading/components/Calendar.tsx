@@ -85,12 +85,36 @@ const emptyDayStyle = css`
   padding: 1rem;
 `;
 
+const actionButtonsStyle = css`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+`;
+
+const actionButtonStyle = css`
+  background: #004C97;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #0066CC;
+  }
+`;
+
 interface CalendarProps {
   onDateSelect: (date: string) => void;
 }
 
 function Calendar({ onDateSelect }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const year = currentDate.getFullYear();
@@ -120,8 +144,14 @@ function Calendar({ onDateSelect }: CalendarProps) {
 
   const handleDateClick = (day: number) => {
     const dateString = formatDateToString(year, month, day);
-    onDateSelect(dateString);
-    navigate(`/reading/${dateString}`);
+    setSelectedDate(dateString);
+  };
+
+  const handleGenerateClick = () => {
+    if (selectedDate) {
+      onDateSelect(selectedDate);
+      navigate(`/reading/${selectedDate}`);
+    }
   };
 
   const goToPreviousMonth = () => {
@@ -170,10 +200,12 @@ function Calendar({ onDateSelect }: CalendarProps) {
           if (day === null) {
             return <div key={`empty-${index}`} css={emptyDayStyle} />;
           }
+          const dateString = formatDateToString(year, month, day);
+          const isSelected = selectedDate === dateString;
           return (
             <motion.button
               key={day}
-              css={dayButtonStyle(true, isToday(day))}
+              css={dayButtonStyle(true, isToday(day) || isSelected)}
               onClick={() => handleDateClick(day)}
               type="button"
               whileHover={{ scale: 1.05 }}
@@ -184,6 +216,17 @@ function Calendar({ onDateSelect }: CalendarProps) {
           );
         })}
       </div>
+      {selectedDate && (
+        <motion.div
+          css={actionButtonsStyle}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <button css={actionButtonStyle} onClick={handleGenerateClick} type="button">
+            Generate Passage
+          </button>
+        </motion.div>
+      )}
     </motion.div>
   );
 }

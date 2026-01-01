@@ -15,6 +15,7 @@ import Vocabulary from '@/pages/Vocabulary.tsx';
 import VocabularyInput from '@/pages/VocabularyInput.tsx';
 import VocabularyView from '@/pages/VocabularyView.tsx';
 import VocabularyPractice from '@/pages/VocabularyPractice.tsx';
+import ReadingAdmin from '@/pages/ReadingAdmin.tsx';
 
 const AUTH_STORAGE_KEY = 'band9_authenticated';
 
@@ -26,6 +27,7 @@ function AppRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route path="/reading" element={<Reading />} />
+        <Route path="/reading/admin" element={<ReadingAdmin />} />
         <Route path="/reading/:date" element={<ReadingPractice />} />
         <Route path="/writing" element={<Writing />} />
         <Route path="/listening" element={<Listening />} />

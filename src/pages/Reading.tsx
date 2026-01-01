@@ -51,6 +51,31 @@ const backButtonStyle = css`
   }
 `;
 
+const adminButtonStyle = css`
+  background: #6c757d;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+  transition: all 0.2s;
+
+  &:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+  }
+`;
+
+const buttonGroupStyle = css`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+`;
+
 const pageVariants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
@@ -70,6 +95,10 @@ function Reading() {
     navigate(`/reading/${date}`);
   };
 
+  const handleAdminClick = () => {
+    navigate('/reading/admin');
+  };
+
   return (
     <motion.div
       css={containerStyle}
@@ -84,9 +113,25 @@ function Reading() {
           ← Home
         </button>
         <h1 css={titleStyle}>Reading Practice</h1>
-        <div style={{ width: '120px' }} />
+        <button css={adminButtonStyle} onClick={handleAdminClick} type="button">
+          Admin
+        </button>
       </div>
       <Calendar onDateSelect={handleDateSelect} />
+      <motion.button
+        css={adminButtonStyle}
+        onClick={handleAdminClick}
+        type="button"
+        style={{
+          marginTop: '2rem',
+          maxWidth: '800px',
+          width: '100%',
+        }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        📝 지문 관리 (Admin)
+      </motion.button>
     </motion.div>
   );
 }
