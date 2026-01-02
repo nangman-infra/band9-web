@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Calendar } from '@/domains/writing';
 
 const containerStyle = css`
   min-height: 100vh;
@@ -15,10 +16,18 @@ const containerStyle = css`
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 `;
 
-const titleStyle = css`
-  font-size: 3rem;
-  font-weight: 700;
+const headerStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
   margin-bottom: 2rem;
+`;
+
+const titleStyle = css`
+  font-size: 2.5rem;
+  font-weight: 700;
   text-align: center;
   color: #004C97;
 `;
@@ -32,7 +41,6 @@ const backButtonStyle = css`
   font-size: 1rem;
   font-weight: 600;
   color: white;
-  margin-top: 2rem;
   box-shadow: 0 2px 4px rgba(0, 76, 151, 0.2);
   transition: all 0.2s;
 
@@ -43,10 +51,23 @@ const backButtonStyle = css`
   }
 `;
 
-const contentStyle = css`
-  text-align: center;
-  font-size: 1.25rem;
-  color: #666666;
+const adminButtonStyle = css`
+  background: #6c757d;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+  transition: all 0.2s;
+
+  &:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+  }
 `;
 
 const pageVariants = {
@@ -55,11 +76,21 @@ const pageVariants = {
   exit: { opacity: 0 },
 };
 
+const TRANSITION_DURATION = 0.2;
+
 function Writing() {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
     navigate('/');
+  };
+
+  const handleDateSelect = (date: string) => {
+    navigate(`/writing/${date}`);
+  };
+
+  const handleAdminClick = () => {
+    navigate('/writing/admin');
   };
 
   return (
@@ -69,13 +100,32 @@ function Writing() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.2 }}
+      transition={{ duration: TRANSITION_DURATION }}
     >
-      <h1 css={titleStyle}>Writing Practice</h1>
-      <p css={contentStyle}>Writing practice page.</p>
-      <button css={backButtonStyle} onClick={handleBackClick} type="button">
-        Back to Home
-      </button>
+      <div css={headerStyle}>
+        <button css={backButtonStyle} onClick={handleBackClick} type="button">
+          ← Home
+        </button>
+        <h1 css={titleStyle}>Writing Practice</h1>
+        <button css={adminButtonStyle} onClick={handleAdminClick} type="button">
+          Admin
+        </button>
+      </div>
+      <Calendar onDateSelect={handleDateSelect} />
+      <motion.button
+        css={adminButtonStyle}
+        onClick={handleAdminClick}
+        type="button"
+        style={{
+          marginTop: '2rem',
+          maxWidth: '800px',
+          width: '100%',
+        }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        📝 문제 관리 (Admin)
+      </motion.button>
     </motion.div>
   );
 }
