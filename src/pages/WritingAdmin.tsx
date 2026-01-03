@@ -3,7 +3,8 @@ import { css } from '@emotion/react';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { writingService, type WritingTask, type CreateWritingTaskDto } from '@/services/writingService';
+import { writingService } from '@/services/writingService';
+import type { WritingTask, CreateWritingTaskDto } from '@/domains/writing/types';
 import { ApiError } from '@/utils/api';
 import { WordCardSkeleton } from '@/components/WordCardSkeleton';
 import WritingTaskForm from '@/components/WritingTaskForm';
@@ -362,4 +363,5 @@ function WritingAdmin() {
 }
 
 export default WritingAdmin;
+
 

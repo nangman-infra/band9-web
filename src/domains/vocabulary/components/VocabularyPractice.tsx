@@ -253,6 +253,11 @@ function VocabularyPractice() {
 
 
   const handleCheck = () => {
+    // 입력이 없으면 바로 패스 (다음 문제로 넘어감)
+    if (!userAnswer.trim()) {
+      handleNext();
+      return;
+    }
     setShowResult(true);
   };
 
@@ -355,7 +360,7 @@ function VocabularyPractice() {
               placeholder="단어의 뜻을 입력하세요"
               disabled={showResult}
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && userAnswer && !showResult) {
+                if (e.key === 'Enter' && !showResult) {
                   handleCheck();
                 }
               }}
@@ -383,9 +388,8 @@ function VocabularyPractice() {
             css={checkButtonStyle}
             onClick={showResult ? handleNext : handleCheck}
             type="button"
-            disabled={!userAnswer && !showResult}
           >
-            {showResult ? 'Next Question' : 'Check Answer'}
+            {showResult ? 'Next Question' : userAnswer.trim() ? 'Check Answer' : 'Pass'}
           </button>
 
           <div css={{ marginTop: '1rem', textAlign: 'center', color: '#666' }}>
