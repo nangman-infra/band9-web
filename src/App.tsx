@@ -5,6 +5,10 @@ import { AnimatePresence } from 'framer-motion';
 import GlobalStyles from '@/styles/global.tsx';
 import Navigation from '@/components/Navigation.tsx';
 import PasswordDialog from '@/components/PasswordDialog.tsx';
+// Google OAuth 관련 코드는 주석 처리 (나중에 활성화 가능)
+// import { AuthProvider } from '@/contexts/AuthContext';
+// import { ProtectedRoute } from '@/components/ProtectedRoute';
+// import Login from '@/pages/Login.tsx';
 import Home from '@/pages/Home.tsx';
 import Reading from '@/pages/Reading.tsx';
 import ReadingPractice from '@/pages/ReadingPractice.tsx';
@@ -29,6 +33,8 @@ function AppRoutes() {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
+        {/* Google OAuth 로그인 라우트는 주석 처리 (나중에 활성화 가능) */}
+        {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/" element={<Home />} />
         <Route path="/reading" element={<Reading />} />
         <Route path="/reading/admin" element={<ReadingAdmin />} />
@@ -84,6 +90,16 @@ function App() {
   }
 
   // 인증되었으면 정상적으로 앱 표시
+  // Google OAuth는 주석 처리 (나중에 활성화 가능)
+  // return (
+  //   <AuthProvider>
+  //     <BrowserRouter>
+  //       <GlobalStyles />
+  //       <Navigation />
+  //       <AppRoutes />
+  //     </BrowserRouter>
+  //   </AuthProvider>
+  // );
   return (
     <BrowserRouter>
       <GlobalStyles />

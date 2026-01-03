@@ -43,6 +43,7 @@ export async function apiFetch<T>(
   
   const response = await fetch(url, {
     ...options,
+    credentials: 'include', // 쿠키 자동 전송 (withCredentials와 동일)
     headers: {
       'Content-Type': 'application/json',
       ...options?.headers,

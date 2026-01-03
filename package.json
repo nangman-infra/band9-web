@@ -12,12 +12,13 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.0",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
-    "framer-motion": "^11.0.0"
+    "axios": "^1.13.2",
+    "framer-motion": "^11.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
@@ -41,7 +42,3 @@
   },
   "packageManager": "pnpm@8.15.0"
 }
-
-
-
-
