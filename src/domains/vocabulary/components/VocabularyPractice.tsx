@@ -102,8 +102,77 @@ const exampleTextStyle = css`
   color: #666;
 `;
 
+const buttonGroupStyle = css`
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+`;
+
+const prevButtonStyle = css`
+  background: #6c757d;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  flex: 1;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #5a6268;
+  }
+
+  &:disabled {
+    background: #c6c8ca;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
 const checkButtonStyle = css`
   background: #28a745;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  flex: 1;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #218838;
+  }
+
+  &:disabled {
+    background: #c6c8ca;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
+const passButtonStyle = css`
+  background: #ffc107;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e0a800;
+  }
+`;
+
+const nextButtonStyle = css`
+  background: #004C97;
   border: none;
   border-radius: 8px;
   padding: 1rem 2rem;
@@ -116,7 +185,7 @@ const checkButtonStyle = css`
   transition: background 0.2s;
 
   &:hover {
-    background: #218838;
+    background: #0066CC;
   }
 `;
 
@@ -253,12 +322,22 @@ function VocabularyPractice() {
 
 
   const handleCheck = () => {
-    // 입력이 없으면 바로 패스 (다음 문제로 넘어감)
     if (!userAnswer.trim()) {
-      handleNext();
-      return;
+      return; // 입력이 없으면 체크하지 않음
     }
     setShowResult(true);
+  };
+
+  const handlePass = () => {
+    handleNext();
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+      setUserAnswer('');
+      setShowResult(false);
+    }
   };
 
   const handleNext = () => {
@@ -384,13 +463,41 @@ function VocabularyPractice() {
             </motion.div>
           )}
 
-          <button
-            css={checkButtonStyle}
-            onClick={showResult ? handleNext : handleCheck}
-            type="button"
-          >
-            {showResult ? 'Next Question' : userAnswer.trim() ? 'Check Answer' : 'Pass'}
-          </button>
+          {showResult ? (
+            <button
+              css={nextButtonStyle}
+              onClick={handleNext}
+              type="button"
+            >
+              Next Question
+            </button>
+          ) : (
+            <div css={buttonGroupStyle}>
+              <button
+                css={prevButtonStyle}
+                onClick={handlePrevious}
+                disabled={currentIndex === 0}
+                type="button"
+              >
+                Prev
+              </button>
+              <button
+                css={checkButtonStyle}
+                onClick={handleCheck}
+                disabled={!userAnswer.trim()}
+                type="button"
+              >
+                Check Answer
+              </button>
+              <button
+                css={passButtonStyle}
+                onClick={handlePass}
+                type="button"
+              >
+                Pass
+              </button>
+            </div>
+          )}
 
           <div css={{ marginTop: '1rem', textAlign: 'center', color: '#666' }}>
             {currentIndex + 1} / {words.length}
