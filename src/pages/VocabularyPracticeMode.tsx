@@ -28,6 +28,13 @@ const titleStyle = css`
   font-size: 2rem;
   font-weight: 700;
   color: #004C97;
+  margin: 0;
+`;
+
+const titleContainerStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `;
 
 const backButtonStyle = css`
@@ -54,10 +61,11 @@ const contentStyle = css`
 `;
 
 const dateDisplayStyle = css`
-  font-size: 1rem;
-  opacity: 0.9;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #888;
   margin-top: 0.5rem;
-  color: #666;
+  margin-left: 0;
 `;
 
 const modeCardStyle = css`
@@ -90,7 +98,10 @@ const modeDescriptionStyle = css`
 
 const formatDate = (dateString: string) => {
   const [year, month, day] = dateString.split('-').map(Number);
-  return `${month}/${day}/${year}`;
+  const date = new Date(year, month - 1, day);
+  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekday = weekdays[date.getDay()];
+  return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')}, ${weekday}`;
 };
 
 function VocabularyPracticeMode() {
@@ -120,7 +131,7 @@ function VocabularyPracticeMode() {
       transition={{ duration: 0.2 }}
     >
       <div css={headerStyle}>
-        <div>
+        <div css={titleContainerStyle}>
           <h1 css={titleStyle}>Practice Mode</h1>
           <div css={dateDisplayStyle}>{formatDate(date)}</div>
         </div>

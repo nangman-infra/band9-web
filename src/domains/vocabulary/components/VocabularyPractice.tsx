@@ -29,6 +29,13 @@ const titleStyle = css`
   font-size: 2rem;
   font-weight: 700;
   color: #004C97;
+  margin: 0;
+`;
+
+const titleContainerStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `;
 
 const backButtonStyle = css`
@@ -207,9 +214,11 @@ const resultStyle = (resultType: 'correct' | 'partial' | 'incorrect') => css`
 `;
 
 const dateDisplayStyle = css`
-  font-size: 1rem;
-  opacity: 0.9;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #888;
   margin-top: 0.5rem;
+  margin-left: 0;
 `;
 
 const dialogOverlayStyle = css`
@@ -346,7 +355,10 @@ function VocabularyPractice() {
 
   const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split('-').map(Number);
-    return `${month}/${day}/${year}`;
+    const date = new Date(year, month - 1, day);
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weekday = weekdays[date.getDay()];
+    return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')}, ${weekday}`;
   };
 
   const currentWord = words[currentIndex];
@@ -487,13 +499,13 @@ function VocabularyPractice() {
       transition={{ duration: 0.2 }}
     >
       <div css={headerStyle}>
-        <div>
+        <div css={titleContainerStyle}>
           <h1 css={titleStyle}>Vocabulary Practice</h1>
           {date && <div css={dateDisplayStyle}>{formatDate(date)}</div>}
         </div>
-          <button css={backButtonStyle} onClick={handleBackClick} type="button">
-            ← Calendar
-          </button>
+        <button css={backButtonStyle} onClick={handleBackClick} type="button">
+          ← Calendar
+        </button>
       </div>
       <div css={contentStyle}>
         {/* MVP: 모드 선택 제거 */}
