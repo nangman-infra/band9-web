@@ -65,6 +65,14 @@ const practiceCardStyle = css`
   margin-bottom: 1.5rem;
 `;
 
+const subtitleStyle = css`
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #004C97;
+  text-align: center;
+`;
+
 const questionStyle = css`
   font-size: 1.5rem;
   font-weight: 700;
@@ -268,6 +276,16 @@ function VocabularyPractice() {
   const [isLoading, setIsLoading] = useState(true);
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
 
+  // 배열을 무작위로 섞는 함수 (Fisher-Yates 알고리즘)
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   useEffect(() => {
     if (date) {
       loadWords();
@@ -280,11 +298,13 @@ function VocabularyPractice() {
     try {
       setIsLoading(true);
       const fetchedWords = await getWordsByDate(date);
-      setWords(fetchedWords);
+      // 단어를 무작위로 섞기
+      const shuffledWords = shuffleArray(fetchedWords);
+      setWords(shuffledWords);
 
       // 빈 배열은 정상적인 응답이므로 에러로 처리하지 않음
       // 단어가 없어도 연습 페이지는 표시하되, 사용자에게 알림
-      if (fetchedWords.length > 0) {
+      if (shuffledWords.length > 0) {
         setCurrentIndex(0);
         setUserAnswer('');
         setShowResult(false);
@@ -446,6 +466,9 @@ function VocabularyPractice() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
         >
+          {/* 소제목 */}
+          <div css={subtitleStyle}>Vocabulary Quiz</div>
+          
           {/* MVP: 영어 단어 표시 */}
           <div css={questionStyle}>
             Word: {currentWord.word}

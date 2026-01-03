@@ -15,6 +15,8 @@ import Vocabulary from '@/pages/Vocabulary.tsx';
 import VocabularyInput from '@/pages/VocabularyInput.tsx';
 import VocabularyView from '@/pages/VocabularyView.tsx';
 import VocabularyPractice from '@/pages/VocabularyPractice.tsx';
+import VocabularyPracticeMode from '@/pages/VocabularyPracticeMode.tsx';
+import VocabularyDragDrop from '@/pages/VocabularyDragDrop.tsx';
 import ReadingAdmin from '@/pages/ReadingAdmin.tsx';
 import WritingPractice from '@/pages/WritingPractice.tsx';
 import WritingAdmin from '@/pages/WritingAdmin.tsx';
@@ -39,7 +41,9 @@ function AppRoutes() {
         <Route path="/vocabulary" element={<Vocabulary />} />
         <Route path="/vocabulary/:date/input" element={<VocabularyInput />} />
         <Route path="/vocabulary/:date/view" element={<VocabularyView />} />
-        <Route path="/vocabulary/:date/practice" element={<VocabularyPractice />} />
+        <Route path="/vocabulary/:date/practice/mode" element={<VocabularyPracticeMode />} />
+        <Route path="/vocabulary/:date/practice/quiz" element={<VocabularyPractice />} />
+        <Route path="/vocabulary/:date/practice/dragdrop" element={<VocabularyDragDrop />} />
       </Routes>
     </AnimatePresence>
   );

@@ -181,7 +181,7 @@ function Calendar({ onDateSelect }: CalendarProps) {
   const handlePracticeClick = () => {
     if (selectedDate) {
       onDateSelect(selectedDate, 'practice');
-      navigate(`/vocabulary/${selectedDate}/practice`);
+      navigate(`/vocabulary/${selectedDate}/practice/mode`);
     }
   };
 
