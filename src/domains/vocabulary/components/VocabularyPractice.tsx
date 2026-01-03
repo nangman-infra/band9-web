@@ -189,12 +189,12 @@ const nextButtonStyle = css`
   }
 `;
 
-const resultStyle = (isCorrect: boolean) => css`
+const resultStyle = (resultType: 'correct' | 'partial' | 'incorrect') => css`
   margin-top: 1rem;
   padding: 1rem;
   border-radius: 8px;
-  background: ${isCorrect ? '#d4edda' : '#f8d7da'};
-  color: ${isCorrect ? '#155724' : '#721c24'};
+  background: ${resultType === 'correct' ? '#d4edda' : resultType === 'partial' ? '#fff3cd' : '#f8d7da'};
+  color: ${resultType === 'correct' ? '#155724' : resultType === 'partial' ? '#856404' : '#721c24'};
   font-weight: 600;
 `;
 
@@ -310,10 +310,36 @@ function VocabularyPractice() {
   };
 
   const currentWord = words[currentIndex];
-  // 사용자가 입력한 뜻과 정답 비교 (대소문자 구분 없이, 공백 제거)
-  const isCorrect = currentWord 
-    ? userAnswer.trim().toLowerCase() === currentWord.meaning.trim().toLowerCase()
-    : false;
+  
+  // 정답 체크 로직: 쉼표로 구분된 여러 뜻 중 하나라도 맞으면 부분 정답
+  const checkAnswer = (userInput: string, correctAnswer: string): 'correct' | 'partial' | 'incorrect' => {
+    const userAnswerTrimmed = userInput.trim().toLowerCase();
+    const correctAnswerTrimmed = correctAnswer.trim().toLowerCase();
+    
+    // 전체 정답과 일치하는지 확인
+    if (userAnswerTrimmed === correctAnswerTrimmed) {
+      return 'correct';
+    }
+    
+    // 쉼표로 구분된 뜻들로 분리
+    const meanings = correctAnswerTrimmed.split(',').map(m => m.trim());
+    
+    // 사용자 입력이 뜻 중 하나와 일치하는지 확인
+    const matchedMeaning = meanings.find(meaning => meaning === userAnswerTrimmed);
+    
+    if (matchedMeaning && meanings.length > 1) {
+      return 'partial'; // 여러 뜻 중 하나만 맞춤
+    }
+    
+    return 'incorrect';
+  };
+  
+  const answerResult = currentWord 
+    ? checkAnswer(userAnswer, currentWord.meaning)
+    : 'incorrect';
+  
+  const isCorrect = answerResult === 'correct';
+  const isPartial = answerResult === 'partial';
 
   const handleBlankInput = (value: string) => {
     setUserAnswer(value);
@@ -455,11 +481,15 @@ function VocabularyPractice() {
 
           {showResult && (
             <motion.div
-              css={resultStyle(isCorrect)}
+              css={resultStyle(answerResult)}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              {isCorrect ? 'Correct! 🎉' : `Incorrect. Answer: ${currentWord.meaning}`}
+              {isCorrect 
+                ? 'Correct! 🎉' 
+                : isPartial 
+                  ? `Partially correct! ✓ You got one meaning right. All meanings: ${currentWord.meaning}` 
+                  : `Incorrect. Answer: ${currentWord.meaning}`}
             </motion.div>
           )}
 
