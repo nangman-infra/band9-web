@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Word } from '@/domains/vocabulary/types';
@@ -292,6 +292,26 @@ function VocabularyPractice() {
     }
   }, [date]);
 
+  // 문제 타입 결정: 각 단어마다 영어 문제(60%) 또는 한글 문제(40%) 할당
+  const questionTypes = useMemo(() => {
+    if (words.length === 0) return [];
+    
+    const types: ('english' | 'korean')[] = [];
+    const englishCount = Math.ceil(words.length * 0.6);
+    
+    // 영어 문제 개수만큼 'english' 추가
+    for (let i = 0; i < englishCount; i++) {
+      types.push('english');
+    }
+    // 나머지는 'korean' 추가
+    for (let i = englishCount; i < words.length; i++) {
+      types.push('korean');
+    }
+    
+    // 무작위로 섞기
+    return shuffleArray(types);
+  }, [words]);
+
   const loadWords = async () => {
     if (!date) return;
 
@@ -330,32 +350,50 @@ function VocabularyPractice() {
   };
 
   const currentWord = words[currentIndex];
+  const currentQuestionType = questionTypes[currentIndex] || 'english';
   
-  // 정답 체크 로직: 쉼표로 구분된 여러 뜻 중 하나라도 맞으면 부분 정답
-  const checkAnswer = (userInput: string, correctAnswer: string): 'correct' | 'partial' | 'incorrect' => {
+  // 정답 체크 로직
+  const checkAnswer = (
+    userInput: string, 
+    correctAnswer: string, 
+    questionType: 'english' | 'korean'
+  ): 'correct' | 'partial' | 'incorrect' => {
     const userAnswerTrimmed = userInput.trim().toLowerCase();
     const correctAnswerTrimmed = correctAnswer.trim().toLowerCase();
     
-    // 전체 정답과 일치하는지 확인
-    if (userAnswerTrimmed === correctAnswerTrimmed) {
-      return 'correct';
-    }
-    
-    // 쉼표로 구분된 뜻들로 분리
-    const meanings = correctAnswerTrimmed.split(',').map(m => m.trim());
-    
-    // 사용자 입력이 뜻 중 하나와 일치하는지 확인
-    const matchedMeaning = meanings.find(meaning => meaning === userAnswerTrimmed);
-    
-    if (matchedMeaning && meanings.length > 1) {
-      return 'partial'; // 여러 뜻 중 하나만 맞춤
+    if (questionType === 'english') {
+      // 영어 문제: 영어 단어 → 한글 뜻
+      // 전체 정답과 일치하는지 확인
+      if (userAnswerTrimmed === correctAnswerTrimmed) {
+        return 'correct';
+      }
+      
+      // 쉼표로 구분된 뜻들로 분리
+      const meanings = correctAnswerTrimmed.split(',').map(m => m.trim());
+      
+      // 사용자 입력이 뜻 중 하나와 일치하는지 확인
+      const matchedMeaning = meanings.find(meaning => meaning === userAnswerTrimmed);
+      
+      if (matchedMeaning && meanings.length > 1) {
+        return 'partial'; // 여러 뜻 중 하나만 맞춤
+      }
+    } else {
+      // 한글 문제: 한글 뜻 → 영어 스펠링 (대소문자 구분 없이)
+      if (userAnswerTrimmed === correctAnswerTrimmed) {
+        return 'correct';
+      }
+      // 한글 문제는 부분 정답 없음
     }
     
     return 'incorrect';
   };
   
-  const answerResult = currentWord 
-    ? checkAnswer(userAnswer, currentWord.meaning)
+  const answerResult = currentWord && currentQuestionType
+    ? checkAnswer(
+        userAnswer, 
+        currentQuestionType === 'english' ? currentWord.meaning : currentWord.word,
+        currentQuestionType
+      )
     : 'incorrect';
   
   const isCorrect = answerResult === 'correct';
@@ -469,31 +507,61 @@ function VocabularyPractice() {
           {/* 소제목 */}
           <div css={subtitleStyle}>Vocabulary Quiz</div>
           
-          {/* MVP: 영어 단어 표시 */}
-          <div css={questionStyle}>
-            Word: {currentWord.word}
-            {currentWord.partOfSpeech && ` (${currentWord.partOfSpeech})`}
-          </div>
+          {/* 문제 타입에 따라 다른 UI 표시 */}
+          {currentQuestionType === 'english' ? (
+            <>
+              {/* 영어 문제: 영어 단어 → 한글 뜻 */}
+              <div css={questionStyle}>
+                Word: {currentWord.word}
+                {currentWord.partOfSpeech && ` (${currentWord.partOfSpeech})`}
+              </div>
 
-          {/* MVP: 뜻 입력 필드 */}
-          <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
-            <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
-              Meaning:
-            </label>
-            <input
-              css={userAnswer ? filledInputStyle : blankInputStyle}
-              type="text"
-              value={userAnswer}
-              onChange={(e) => handleBlankInput(e.target.value)}
-              placeholder="단어의 뜻을 입력하세요"
-              disabled={showResult}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && !showResult) {
-                  handleCheck();
-                }
-              }}
-            />
-          </div>
+              <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
+                <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
+                  Meaning:
+                </label>
+                <input
+                  css={userAnswer ? filledInputStyle : blankInputStyle}
+                  type="text"
+                  value={userAnswer}
+                  onChange={(e) => handleBlankInput(e.target.value)}
+                  placeholder="단어의 뜻을 입력하세요"
+                  disabled={showResult}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !showResult) {
+                      handleCheck();
+                    }
+                  }}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* 한글 문제: 한글 뜻 → 영어 스펠링 */}
+              <div css={questionStyle}>
+                Meaning: {currentWord.meaning}
+              </div>
+
+              <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
+                <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
+                  Word (English Spelling):
+                </label>
+                <input
+                  css={userAnswer ? filledInputStyle : blankInputStyle}
+                  type="text"
+                  value={userAnswer}
+                  onChange={(e) => handleBlankInput(e.target.value)}
+                  placeholder="영어 단어를 입력하세요"
+                  disabled={showResult}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !showResult) {
+                      handleCheck();
+                    }
+                  }}
+                />
+              </div>
+            </>
+          )}
 
           {/* 예문 표시 (있는 경우) */}
           {currentWord.example && (
@@ -512,7 +580,9 @@ function VocabularyPractice() {
                 ? 'Correct! 🎉' 
                 : isPartial 
                   ? `Partially correct! ✓ You got one meaning right. All meanings: ${currentWord.meaning}` 
-                  : `Incorrect. Answer: ${currentWord.meaning}`}
+                  : currentQuestionType === 'english'
+                    ? `Incorrect. Answer: ${currentWord.meaning}`
+                    : `Incorrect. Answer: ${currentWord.word}`}
             </motion.div>
           )}
 
