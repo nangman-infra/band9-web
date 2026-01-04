@@ -90,7 +90,7 @@ api.interceptors.response.use(
 export const authService = {
   // Google 로그인 시작
   loginWithGoogle: () => {
-    window.location.href = `${API_BASE_URL}/auth/google`;
+    window.location.href = `${API_BASE_URL}/auth/google/callback`;
   },
 
   // Access Token 갱신
