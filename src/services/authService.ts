@@ -93,6 +93,12 @@ export const authService = {
     window.location.href = `${API_BASE_URL}/auth/google`;
   },
 
+  // 현재 사용자 정보 조회
+  getCurrentUser: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  },
+
   // Access Token 갱신
   refreshToken: async (): Promise<void> => {
     await api.post('/auth/refresh');

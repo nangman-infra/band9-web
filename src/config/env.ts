@@ -12,7 +12,7 @@ interface EnvConfig {
 
 function getEnvConfig(): EnvConfig {
   const mode = import.meta.env.MODE || 'development';
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://172.16.0.8:3000';
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.junoshon.cloud';
 
   return {
     apiBaseUrl,

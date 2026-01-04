@@ -1,7 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { GoogleLoginButton } from '@/components/GoogleLoginButton';
@@ -46,15 +44,7 @@ const buttonContainerStyle = css`
 `;
 
 export const Login = () => {
-  const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
-
-  // 인증된 상태면 홈으로 리다이렉트
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      navigate('/', { replace: true });
-    }
-  }, [isAuthenticated, isLoading, navigate]);
+  const { isLoading } = useAuth();
 
   // 로딩 중이면 아무것도 표시하지 않음
   if (isLoading) {
