@@ -371,7 +371,6 @@ function WritingPractice() {
     if (!date) return;
     
     const currentWordCount = countWords(content);
-    const minWords = getMinWords(taskType);
     
     setIsSaving(true);
     setSavingTaskId(taskId);
