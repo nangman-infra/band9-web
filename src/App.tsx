@@ -1,14 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import GlobalStyles from '@/styles/global.tsx';
 import Navigation from '@/components/Navigation.tsx';
-import PasswordDialog from '@/components/PasswordDialog.tsx';
-// Google OAuth 관련 코드는 주석 처리 (나중에 활성화 가능)
-// import { AuthProvider } from '@/contexts/AuthContext';
-// import { ProtectedRoute } from '@/components/ProtectedRoute';
-// import Login from '@/pages/Login.tsx';
+import { AuthProvider } from '@/contexts/AuthContext';
+import Login from '@/pages/Login.tsx';
 import Home from '@/pages/Home.tsx';
 import Reading from '@/pages/Reading.tsx';
 import ReadingPractice from '@/pages/ReadingPractice.tsx';
@@ -25,16 +21,13 @@ import ReadingAdmin from '@/pages/ReadingAdmin.tsx';
 import WritingPractice from '@/pages/WritingPractice.tsx';
 import WritingAdmin from '@/pages/WritingAdmin.tsx';
 
-const AUTH_STORAGE_KEY = 'band9_authenticated';
-
 function AppRoutes() {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        {/* Google OAuth 로그인 라우트는 주석 처리 (나중에 활성화 가능) */}
-        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/reading" element={<Reading />} />
         <Route path="/reading/admin" element={<ReadingAdmin />} />
@@ -56,56 +49,14 @@ function AppRoutes() {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
-
-  useEffect(() => {
-    // sessionStorage에서 인증 상태 확인 (탭을 닫으면 자동으로 만료됨)
-    const authStatus = sessionStorage.getItem(AUTH_STORAGE_KEY);
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-    setIsChecking(false);
-  }, []);
-
-  const handleAuthSuccess = () => {
-    // sessionStorage에 저장 (브라우저 탭을 닫으면 자동으로 삭제됨)
-    sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
-    setIsAuthenticated(true);
-  };
-
-  // 인증 확인 중이면 아무것도 표시하지 않음
-  if (isChecking) {
-    return null;
-  }
-
-  // 인증되지 않았으면 비밀번호 다이얼로그 표시
-  if (!isAuthenticated) {
-    return (
-      <>
-        <GlobalStyles />
-        <PasswordDialog isOpen={true} onSuccess={handleAuthSuccess} />
-      </>
-    );
-  }
-
-  // 인증되었으면 정상적으로 앱 표시
-  // Google OAuth는 주석 처리 (나중에 활성화 가능)
-  // return (
-  //   <AuthProvider>
-  //     <BrowserRouter>
-  //       <GlobalStyles />
-  //       <Navigation />
-  //       <AppRoutes />
-  //     </BrowserRouter>
-  //   </AuthProvider>
-  // );
   return (
-    <BrowserRouter>
-      <GlobalStyles />
-      <Navigation />
-      <AppRoutes />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <GlobalStyles />
+        <Navigation />
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
