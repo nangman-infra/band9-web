@@ -70,13 +70,6 @@ const taskHeaderStyle = css`
   border-bottom: 2px solid #e0e0e0;
 `;
 
-const taskTitleStyle = css`
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #004C97;
-  margin-bottom: 0.5rem;
-`;
-
 const taskTypeStyle = css`
   font-size: 1rem;
   color: #666;
@@ -379,7 +372,6 @@ function WritingPractice() {
     
     const currentWordCount = countWords(content);
     const minWords = getMinWords(taskType);
-    const isEnough = currentWordCount >= minWords;
     
     setIsSaving(true);
     setSavingTaskId(taskId);

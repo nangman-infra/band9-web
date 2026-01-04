@@ -96,13 +96,6 @@ const taskInfoStyle = css`
   flex: 1;
 `;
 
-const taskTitleStyle = css`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #004C97;
-  margin-bottom: 0.5rem;
-`;
-
 const taskMetaStyle = css`
   font-size: 0.875rem;
   color: #666;
@@ -132,22 +125,6 @@ const taskBadgeStyle = (taskType: number) => css`
 const actionButtonsStyle = css`
   display: flex;
   gap: 0.5rem;
-`;
-
-const editButtonStyle = css`
-  background: #FFC107;
-  border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #333;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #FFD54F;
-  }
 `;
 
 const deleteButtonStyle = css`
