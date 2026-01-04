@@ -503,9 +503,9 @@ function VocabularyPractice() {
           <h1 css={titleStyle}>Vocabulary Practice</h1>
           {date && <div css={dateDisplayStyle}>{formatDate(date)}</div>}
         </div>
-        <button css={backButtonStyle} onClick={handleBackClick} type="button">
-          ← Calendar
-        </button>
+          <button css={backButtonStyle} onClick={handleBackClick} type="button">
+            ← Calendar
+          </button>
       </div>
       <div css={contentStyle}>
         {/* MVP: 모드 선택 제거 */}
@@ -523,23 +523,23 @@ function VocabularyPractice() {
           {currentQuestionType === 'english' ? (
             <>
               {/* 영어 문제: 영어 단어 → 한글 뜻 */}
-              <div css={questionStyle}>
-                Word: {currentWord.word}
-                {currentWord.partOfSpeech && ` (${currentWord.partOfSpeech})`}
-              </div>
+          <div css={questionStyle}>
+            Word: {currentWord.word}
+            {currentWord.partOfSpeech && ` (${currentWord.partOfSpeech})`}
+          </div>
 
-              <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
-                <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
-                  Meaning:
-                </label>
-                <input
-                  css={userAnswer ? filledInputStyle : blankInputStyle}
-                  type="text"
-                  value={userAnswer}
-                  onChange={(e) => handleBlankInput(e.target.value)}
-                  placeholder="단어의 뜻을 입력하세요"
-                  disabled={showResult}
-                  onKeyPress={(e) => {
+          <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
+            <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
+              Meaning:
+            </label>
+            <input
+              css={userAnswer ? filledInputStyle : blankInputStyle}
+              type="text"
+              value={userAnswer}
+              onChange={(e) => handleBlankInput(e.target.value)}
+              placeholder="단어의 뜻을 입력하세요"
+              disabled={showResult}
+              onKeyPress={(e) => {
                     if (e.key === 'Enter' && !showResult) {
                       handleCheck();
                     }
@@ -567,11 +567,11 @@ function VocabularyPractice() {
                   disabled={showResult}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter' && !showResult) {
-                      handleCheck();
-                    }
-                  }}
-                />
-              </div>
+                  handleCheck();
+                }
+              }}
+            />
+          </div>
             </>
           )}
 
@@ -616,8 +616,8 @@ function VocabularyPractice() {
               >
                 Prev
               </button>
-              <button
-                css={checkButtonStyle}
+          <button
+            css={checkButtonStyle}
                 onClick={handleCheck}
                 disabled={!userAnswer.trim()}
                 type="button"
@@ -627,10 +627,10 @@ function VocabularyPractice() {
               <button
                 css={passButtonStyle}
                 onClick={handlePass}
-                type="button"
-              >
+            type="button"
+          >
                 Pass
-              </button>
+          </button>
             </div>
           )}
 

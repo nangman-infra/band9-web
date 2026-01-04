@@ -106,10 +106,10 @@ function Writing() {
         <button css={backButtonStyle} onClick={handleBackClick} type="button">
           ← Home
         </button>
-        <h1 css={titleStyle}>Writing Practice</h1>
+      <h1 css={titleStyle}>Writing Practice</h1>
         <button css={adminButtonStyle} onClick={handleAdminClick} type="button">
           Admin
-        </button>
+      </button>
       </div>
       <Calendar onDateSelect={handleDateSelect} />
       <motion.button

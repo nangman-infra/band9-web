@@ -3,8 +3,7 @@ import { css } from '@emotion/react';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { writingService } from '@/services/writingService';
-import type { WritingTask, CreateWritingTaskDto } from '@/domains/writing/types';
+import { writingService, type WritingQuestion, type CreateWritingQuestionDto } from '@/services/writingService';
 import { ApiError } from '@/utils/api';
 import { WordCardSkeleton } from '@/components/WordCardSkeleton';
 import WritingTaskForm from '@/components/WritingTaskForm';
@@ -110,6 +109,26 @@ const taskMetaStyle = css`
   margin-top: 0.25rem;
 `;
 
+const taskContentStyle = css`
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
+  margin-top: 0.75rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
+
+const taskBadgeStyle = (taskType: number) => css`
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  background: ${taskType === 1 ? '#E3F2FD' : '#E8F5E9'};
+  color: ${taskType === 1 ? '#1976D2' : '#388E3C'};
+`;
+
 const actionButtonsStyle = css`
   display: flex;
   gap: 0.5rem;
@@ -154,26 +173,57 @@ const emptyStateStyle = css`
   border-radius: 16px;
   color: #666;
   font-size: 1.125rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+`;
+
+const emptyIconStyle = css`
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+  color: #9CA3AF;
+`;
+
+const emptyTitleStyle = css`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+`;
+
+const emptyMessageStyle = css`
+  font-size: 1rem;
+  color: #6B7280;
+  line-height: 1.6;
+  max-width: 400px;
 `;
 
 function WritingAdmin() {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState<WritingTask[]>([]);
+  const [questions, setQuestions] = useState<WritingQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [editingTask, setEditingTask] = useState<WritingTask | null>(null);
+  const [editingQuestion, setEditingQuestion] = useState<WritingQuestion | null>(null);
 
-  const loadTasks = useCallback(async () => {
+  const loadQuestions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await writingService.getAllTasks();
-      setTasks(data || []);
+      const data = await writingService.getAllQuestions();
+      // 날짜 내림차순으로 정렬
+      const sorted = (data || []).sort((a, b) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+      setQuestions(sorted);
     } catch (err) {
-      console.error('Failed to load tasks:', err);
+      console.error('Failed to load questions:', err);
       if (err instanceof ApiError && err.status === 404) {
-        setTasks([]);
+        setQuestions([]);
       } else {
         if (err instanceof ApiError) {
           setError(`문제 목록을 불러오는데 실패했습니다: ${err.message}`);
@@ -189,40 +239,31 @@ function WritingAdmin() {
   }, []);
 
   useEffect(() => {
-    loadTasks();
-  }, [loadTasks]);
+    loadQuestions();
+  }, [loadQuestions]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     try {
-      await writingService.deleteTask(id);
-      loadTasks();
+      await writingService.deleteQuestion(id);
+      loadQuestions();
     } catch (err) {
-      console.error('Failed to delete task:', err);
+      console.error('Failed to delete question:', err);
       alert('삭제에 실패했습니다.');
     }
   };
 
-  const handleEdit = (task: WritingTask) => {
-    setEditingTask(task);
-    setShowForm(true);
-  };
-
   const handleAdd = () => {
-    setEditingTask(null);
+    setEditingQuestion(null);
     setShowForm(true);
   };
 
-  const handleFormSubmit = async (dto: CreateWritingTaskDto) => {
+  const handleFormSubmit = async (dto: CreateWritingQuestionDto) => {
     try {
-      if (editingTask) {
-        await writingService.updateTask(editingTask.id, dto);
-      } else {
-        await writingService.createTask(dto);
-      }
+      await writingService.createQuestion(dto);
       setShowForm(false);
-      setEditingTask(null);
-      loadTasks();
+      setEditingQuestion(null);
+      loadQuestions();
     } catch (err) {
       console.error('저장 실패:', err);
       let errorMessage = '저장에 실패했습니다.';
@@ -242,14 +283,7 @@ function WritingAdmin() {
 
   const handleFormCancel = () => {
     setShowForm(false);
-    setEditingTask(null);
-  };
-
-  const getTaskTypeLabel = (task: WritingTask) => {
-    if (task.taskType === 'task1') {
-      return `Task 1 (${task.task1Type === 'academic' ? 'Academic' : 'General'})`;
-    }
-    return 'Task 2';
+    setEditingQuestion(null);
   };
 
   if (isLoading) {
@@ -310,43 +344,72 @@ function WritingAdmin() {
       <AnimatePresence>
         {showForm && (
           <WritingTaskForm
-            task={editingTask}
+            question={editingQuestion}
             onSubmit={handleFormSubmit}
             onCancel={handleFormCancel}
           />
         )}
       </AnimatePresence>
       <div css={contentStyle}>
-        {tasks.length === 0 ? (
-          <div css={emptyStateStyle}>
-            등록된 문제가 없습니다. "새 문제 추가" 버튼을 클릭하여 문제를 추가하세요.
-          </div>
+        {questions.length === 0 ? (
+          <motion.div
+            css={emptyStateStyle}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              css={emptyIconStyle}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 0.6 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            </motion.div>
+            <div css={emptyTitleStyle}>등록된 문제가 없습니다</div>
+            <div css={emptyMessageStyle}>
+              "새 문제 추가" 버튼을 클릭하여 첫 번째 Writing 문제를 추가해보세요.
+            </div>
+          </motion.div>
         ) : (
           <div css={taskListStyle}>
-            {tasks.map((task) => (
+            {questions.map((question) => (
               <motion.div
-                key={task.id}
+                key={question.id}
                 css={taskCardStyle}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
                 <div css={taskHeaderStyle}>
                   <div css={taskInfoStyle}>
-                    <h3 css={taskTitleStyle}>{task.title}</h3>
-                    <div css={taskMetaStyle}>날짜: {task.date}</div>
-                    <div css={taskMetaStyle}>유형: {getTaskTypeLabel(task)}</div>
+                    <div css={css`display: flex; align-items: center; margin-bottom: 0.5rem;`}>
+                      <span css={taskBadgeStyle(question.taskType)}>
+                        Task {question.taskType}
+                      </span>
+                      <span css={taskMetaStyle}>{question.date}</span>
+                    </div>
+                    <div css={taskContentStyle}>{question.content}</div>
+                    <div css={css`${taskMetaStyle}; margin-top: 0.75rem;`}>
+                      생성일: {new Date(question.createdAt).toLocaleString('ko-KR')}
+                    </div>
                   </div>
                   <div css={actionButtonsStyle}>
                     <button
-                      css={editButtonStyle}
-                      onClick={() => handleEdit(task)}
-                      type="button"
-                    >
-                      수정
-                    </button>
-                    <button
                       css={deleteButtonStyle}
-                      onClick={() => handleDelete(task.id)}
+                      onClick={() => handleDelete(question.id)}
                       type="button"
                     >
                       삭제

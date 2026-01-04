@@ -181,3 +181,6 @@ api.interceptors.request.use((config) => {
 - [ ] CORS 설정 확인
 - [ ] 환경 변수 확인
 
+
+
+

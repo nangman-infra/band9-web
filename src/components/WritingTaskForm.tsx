@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import type { WritingTask, CreateWritingTaskDto } from '@/domains/writing/types';
+import type { WritingQuestion, CreateWritingQuestionDto } from '@/services/writingService';
 
 const formOverlayStyle = css`
   position: fixed;
@@ -70,6 +70,15 @@ const labelStyle = css`
   margin-bottom: 0.5rem;
 `;
 
+const wordRequirementStyle = css`
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #E6F2FF;
+  border-radius: 6px;
+`;
+
 const inputStyle = css`
   width: 100%;
   padding: 0.75rem;
@@ -119,48 +128,45 @@ const submitButtonStyle = css`
 `;
 
 interface WritingTaskFormProps {
-  task?: WritingTask | null;
-  onSubmit: (dto: CreateWritingTaskDto) => void;
+  question?: WritingQuestion | null;
+  onSubmit: (dto: CreateWritingQuestionDto) => void;
   onCancel: () => void;
 }
 
-function WritingTaskForm({ task, onSubmit, onCancel }: WritingTaskFormProps) {
+function WritingTaskForm({ question, onSubmit, onCancel }: WritingTaskFormProps) {
   const [date, setDate] = useState('');
-  const [taskType, setTaskType] = useState<'task1' | 'task2'>('task1');
-  const [task1Type, setTask1Type] = useState<'academic' | 'general'>('academic');
-  const [title, setTitle] = useState('');
-  const [instruction, setInstruction] = useState('');
+  const [taskType, setTaskType] = useState<number>(1);
+  const [content, setContent] = useState('');
 
   useEffect(() => {
-    if (task) {
-      setDate(task.date);
-      setTaskType(task.taskType);
-      setTask1Type(task.task1Type || 'academic');
-      setTitle(task.title);
-      setInstruction(task.instruction);
+    if (question) {
+      setDate(question.date);
+      setTaskType(question.taskType);
+      setContent(question.content);
     } else {
       setDate(new Date().toISOString().split('T')[0]);
-      setTaskType('task1');
-      setTask1Type('academic');
-      setTitle('');
-      setInstruction('');
+      setTaskType(1);
+      setContent('');
     }
-  }, [task]);
+  }, [question]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date.trim() || !title.trim() || !instruction.trim()) {
-      alert('날짜, 제목, 지시사항을 모두 입력해주세요.');
+    if (!date.trim() || !content.trim()) {
+      alert('날짜와 문제 내용을 모두 입력해주세요.');
+      return;
+    }
+
+    if (taskType !== 1 && taskType !== 2) {
+      alert('Task 유형은 1 또는 2여야 합니다.');
       return;
     }
 
     onSubmit({
       date: date.trim(),
       taskType,
-      task1Type: taskType === 'task1' ? task1Type : undefined,
-      title: title.trim(),
-      instruction: instruction.trim(),
+      content: content.trim(),
     });
   };
 
@@ -181,7 +187,7 @@ function WritingTaskForm({ task, onSubmit, onCancel }: WritingTaskFormProps) {
       >
         <div css={formHeaderStyle}>
           <h2 css={formTitleStyle}>
-            {task ? 'Writing 문제 수정' : '새 Writing 문제 추가'}
+            {question ? 'Writing 문제 수정' : '새 Writing 문제 추가'}
           </h2>
           <button css={closeButtonStyle} onClick={onCancel} type="button">
             닫기
@@ -211,63 +217,35 @@ function WritingTaskForm({ task, onSubmit, onCancel }: WritingTaskFormProps) {
               id="taskType"
               css={selectStyle}
               value={taskType}
-              onChange={(e) => setTaskType(e.target.value as 'task1' | 'task2')}
+              onChange={(e) => setTaskType(Number(e.target.value))}
               required
             >
-              <option value="task1">Task 1</option>
-              <option value="task2">Task 2</option>
+              <option value={1}>Task 1</option>
+              <option value={2}>Task 2</option>
             </select>
-          </div>
-
-          {taskType === 'task1' && (
-            <div css={formGroupStyle}>
-              <label css={labelStyle} htmlFor="task1Type">
-                Task 1 유형 *
-              </label>
-              <select
-                id="task1Type"
-                css={selectStyle}
-                value={task1Type}
-                onChange={(e) => setTask1Type(e.target.value as 'academic' | 'general')}
-                required
-              >
-                <option value="academic">Academic (차트/그래프/표 설명)</option>
-                <option value="general">General (편지 작성)</option>
-              </select>
-            </div>
-          )}
-
-          <div css={formGroupStyle}>
-            <label css={labelStyle} htmlFor="title">
-              제목 *
-            </label>
-            <input
-              id="title"
-              css={inputStyle}
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="문제 제목을 입력하세요"
-              required
-            />
+            {taskType === 1 && (
+              <div css={wordRequirementStyle}>
+                ⚠ Task 1은 150단어 이상 작성해야 합니다.
+              </div>
+            )}
           </div>
 
           <div css={formGroupStyle}>
-            <label css={labelStyle} htmlFor="instruction">
-              지시사항 (Instruction) *
+            <label css={labelStyle} htmlFor="content">
+              문제 내용 *
             </label>
             <textarea
-              id="instruction"
+              id="content"
               css={textareaStyle}
-              value={instruction}
-              onChange={(e) => setInstruction(e.target.value)}
-              placeholder="Writing 지시사항을 입력하세요"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="라이팅 문제 내용을 입력하세요..."
               required
             />
           </div>
 
           <button css={submitButtonStyle} type="submit">
-            {task ? '수정하기' : '저장하기'}
+            {question ? '수정하기' : '저장하기'}
           </button>
         </form>
       </motion.div>
@@ -276,5 +254,7 @@ function WritingTaskForm({ task, onSubmit, onCancel }: WritingTaskFormProps) {
 }
 
 export default WritingTaskForm;
+
+
 
 
