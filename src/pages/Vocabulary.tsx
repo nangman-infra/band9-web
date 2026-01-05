@@ -18,7 +18,7 @@ const containerStyle = css`
 
 const headerStyle = css`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 800px;
@@ -32,25 +32,6 @@ const titleStyle = css`
   color: #004C97;
 `;
 
-const backButtonStyle = css`
-  background: #004C97;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 76, 151, 0.2);
-  transition: all 0.2s;
-
-  &:hover {
-    background: #0066CC;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 76, 151, 0.3);
-  }
-`;
-
 const pageVariants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
@@ -61,10 +42,6 @@ const TRANSITION_DURATION = 0.2;
 
 function Vocabulary() {
   const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate('/');
-  };
 
   const handleDateSelect = (date: string, mode: 'input' | 'practice' | 'view') => {
     if (mode === 'input') {
@@ -86,11 +63,7 @@ function Vocabulary() {
       transition={{ duration: TRANSITION_DURATION }}
     >
       <div css={headerStyle}>
-        <button css={backButtonStyle} onClick={handleBackClick} type="button">
-          ← Home
-        </button>
         <h1 css={titleStyle}>Vocabulary</h1>
-        <div style={{ width: '120px' }} />
       </div>
       <Calendar onDateSelect={handleDateSelect} />
     </motion.div>

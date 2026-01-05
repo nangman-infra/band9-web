@@ -18,11 +18,12 @@ const containerStyle = css`
 
 const headerStyle = css`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 800px;
   margin-bottom: 2rem;
+  position: relative;
 `;
 
 const titleStyle = css`
@@ -30,25 +31,6 @@ const titleStyle = css`
   font-weight: 700;
   text-align: center;
   color: #004C97;
-`;
-
-const backButtonStyle = css`
-  background: #004C97;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 76, 151, 0.2);
-  transition: all 0.2s;
-
-  &:hover {
-    background: #0066CC;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 76, 151, 0.3);
-  }
 `;
 
 const adminButtonStyle = css`
@@ -81,10 +63,6 @@ const TRANSITION_DURATION = 0.2;
 function Writing() {
   const navigate = useNavigate();
 
-  const handleBackClick = () => {
-    navigate('/');
-  };
-
   const handleDateSelect = (date: string) => {
     navigate(`/writing/${date}`);
   };
@@ -103,13 +81,15 @@ function Writing() {
       transition={{ duration: TRANSITION_DURATION }}
     >
       <div css={headerStyle}>
-        <button css={backButtonStyle} onClick={handleBackClick} type="button">
-          ← Home
-        </button>
-      <h1 css={titleStyle}>Writing Practice</h1>
-        <button css={adminButtonStyle} onClick={handleAdminClick} type="button">
+        <h1 css={titleStyle}>Writing Practice</h1>
+        <button
+          css={adminButtonStyle}
+          onClick={handleAdminClick}
+          type="button"
+          style={{ position: 'absolute', right: 0 }}
+        >
           Admin
-      </button>
+        </button>
       </div>
       <Calendar onDateSelect={handleDateSelect} />
       <motion.button
