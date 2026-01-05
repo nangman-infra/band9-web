@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Word } from '@/domains/vocabulary/types';
