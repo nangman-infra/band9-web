@@ -107,7 +107,6 @@ const dayButtonStyle = (
   isCurrentMonth: boolean,
   isToday: boolean,
   isSelected: boolean,
-  hasWords: boolean,
 ) => css`
   background: ${isSelected
     ? '#004C97'
@@ -234,7 +233,6 @@ function Calendar({ onDateSelect }: CalendarProps) {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [datesWithWords, setDatesWithWords] = useState<Set<string>>(new Set());
-  const [isLoadingWords, setIsLoadingWords] = useState(false);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -300,7 +298,6 @@ function Calendar({ onDateSelect }: CalendarProps) {
   // 현재 달력에 표시된 월의 모든 날짜에 대해 단어 존재 여부 확인
   useEffect(() => {
     const checkWordsForMonth = async () => {
-      setIsLoadingWords(true);
       const datesToCheck: string[] = [];
       
       // 현재 달의 모든 날짜 생성
@@ -338,7 +335,6 @@ function Calendar({ onDateSelect }: CalendarProps) {
       });
 
       setDatesWithWords(datesWithWordsSet);
-      setIsLoadingWords(false);
     };
 
     checkWordsForMonth();
@@ -389,7 +385,7 @@ function Calendar({ onDateSelect }: CalendarProps) {
           return (
             <motion.button
               key={day}
-              css={dayButtonStyle(true, isTodayDate, isSelected, hasWords)}
+              css={dayButtonStyle(true, isTodayDate, isSelected)}
               onClick={() => handleDateClick(day)}
               type="button"
               whileHover={{ scale: 1.05 }}
