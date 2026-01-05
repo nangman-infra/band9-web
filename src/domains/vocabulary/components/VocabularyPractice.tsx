@@ -13,23 +13,39 @@ const containerStyle = css`
   display: flex;
   flex-direction: column;
   background: #F5F7FA;
-  padding: 2rem;
+  padding: 1rem;
   padding-top: 6rem; /* 네비게이션 높이만큼 여백 추가 */
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const headerStyle = css`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (min-width: 640px) {
+    margin-bottom: 2rem;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
 `;
 
 const titleStyle = css`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #004C97;
   margin: 0;
+
+  @media (min-width: 640px) {
+    font-size: 2rem;
+  }
 `;
 
 const titleContainerStyle = css`
@@ -42,13 +58,19 @@ const backButtonStyle = css`
   background: white;
   border: none;
   border-radius: 8px;
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1rem;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+
+  @media (min-width: 640px) {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -66,10 +88,14 @@ const contentStyle = css`
 const practiceCardStyle = css`
   background: white;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #333;
   margin-bottom: 1.5rem;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const subtitleStyle = css`
@@ -81,20 +107,30 @@ const subtitleStyle = css`
 `;
 
 const questionStyle = css`
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #004C97;
+
+  @media (min-width: 640px) {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const blankInputStyle = css`
   width: 100%;
-  padding: 1rem;
+  padding: 0.75rem;
   border: 2px dashed #004C97;
   border-radius: 8px;
-  font-size: 1.25rem;
+  font-size: 1rem;
   background: #f0f7ff;
   transition: all 0.2s;
+
+  @media (min-width: 640px) {
+    padding: 1rem;
+    font-size: 1.25rem;
+  }
 
   &:focus {
     outline: none;
@@ -119,21 +155,35 @@ const exampleTextStyle = css`
 
 const buttonGroupStyle = css`
   display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+
+  @media (min-width: 640px) {
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: nowrap;
+  }
 `;
 
 const prevButtonStyle = css`
   background: #6c757d;
   border: none;
   border-radius: 8px;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: white;
   flex: 1;
+  min-width: 80px;
   transition: background 0.2s;
+
+  @media (min-width: 640px) {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    min-width: auto;
+  }
 
   &:hover {
     background: #5a6268;
@@ -150,13 +200,20 @@ const checkButtonStyle = css`
   background: #28a745;
   border: none;
   border-radius: 8px;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: white;
   flex: 1;
+  min-width: 80px;
   transition: background 0.2s;
+
+  @media (min-width: 640px) {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    min-width: auto;
+  }
 
   &:hover {
     background: #218838;
@@ -173,13 +230,20 @@ const passButtonStyle = css`
   background: #ffc107;
   border: none;
   border-radius: 8px;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #333;
   flex: 1;
+  min-width: 80px;
   transition: background 0.2s;
+
+  @media (min-width: 640px) {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    min-width: auto;
+  }
 
   &:hover {
     background: #e0a800;
@@ -190,14 +254,20 @@ const nextButtonStyle = css`
   background: #004C97;
   border: none;
   border-radius: 8px;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: white;
   width: 100%;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   transition: background 0.2s;
+
+  @media (min-width: 640px) {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    margin-top: 1.5rem;
+  }
 
   &:hover {
     background: #0066CC;
@@ -214,11 +284,15 @@ const resultStyle = (resultType: 'correct' | 'partial' | 'incorrect') => css`
 `;
 
 const dateDisplayStyle = css`
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #888;
   margin-top: 0.5rem;
   margin-left: 0;
+
+  @media (min-width: 640px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const dialogOverlayStyle = css`
@@ -528,8 +602,8 @@ function VocabularyPractice() {
             {currentWord.partOfSpeech && ` (${currentWord.partOfSpeech})`}
           </div>
 
-          <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
-            <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
+              <div css={{ marginTop: '1rem', marginBottom: '1rem' }}>
+            <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 600, color: '#333' }}>
               Meaning:
             </label>
             <input
@@ -554,8 +628,8 @@ function VocabularyPractice() {
                 Meaning: {currentWord.meaning}
               </div>
 
-              <div css={{ marginTop: '2rem', marginBottom: '1rem' }}>
-                <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: 600, color: '#333' }}>
+              <div css={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                <label css={{ display: 'block', marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 600, color: '#333' }}>
                   Word (English Spelling):
                 </label>
                 <input

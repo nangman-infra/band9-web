@@ -10,25 +10,41 @@ const containerStyle = css`
   align-items: center;
   justify-content: center;
   background: #F5F7FA;
-  padding: 2rem;
+  padding: 1rem;
   padding-top: 6rem;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const headerStyle = css`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   max-width: 800px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (min-width: 640px) {
+    margin-bottom: 2rem;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
 `;
 
 const titleStyle = css`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #004C97;
   margin: 0;
+
+  @media (min-width: 640px) {
+    font-size: 2rem;
+  }
 `;
 
 const titleContainerStyle = css`
@@ -41,13 +57,19 @@ const backButtonStyle = css`
   background: white;
   border: none;
   border-radius: 8px;
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1rem;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+
+  @media (min-width: 640px) {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -61,39 +83,62 @@ const contentStyle = css`
 `;
 
 const dateDisplayStyle = css`
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #888;
   margin-top: 0.5rem;
   margin-left: 0;
+
+  @media (min-width: 640px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const modeCardStyle = css`
   background: white;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   cursor: pointer;
   transition: all 0.2s;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
   }
+
+  @media (hover: none) {
+    &:hover {
+      transform: none;
+    }
+  }
 `;
 
 const modeTitleStyle = css`
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #004C97;
   margin-bottom: 0.5rem;
+
+  @media (min-width: 640px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const modeDescriptionStyle = css`
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: #666;
   line-height: 1.6;
+
+  @media (min-width: 640px) {
+    font-size: 1rem;
+  }
 `;
 
 const formatDate = (dateString: string) => {

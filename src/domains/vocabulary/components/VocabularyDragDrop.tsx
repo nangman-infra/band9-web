@@ -14,35 +14,57 @@ const containerStyle = css`
   display: flex;
   flex-direction: column;
   background: #F5F7FA;
-  padding: 2rem;
+  padding: 1rem;
   padding-top: 6rem;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const headerStyle = css`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (min-width: 640px) {
+    margin-bottom: 2rem;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
 `;
 
 const titleStyle = css`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #004C97;
+
+  @media (min-width: 640px) {
+    font-size: 2rem;
+  }
 `;
 
 const backButtonStyle = css`
   background: white;
   border: none;
   border-radius: 8px;
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1rem;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+
+  @media (min-width: 640px) {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -65,10 +87,14 @@ const dateDisplayStyle = css`
 const practiceCardStyle = css`
   background: white;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #333;
   margin-bottom: 1.5rem;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const subtitleStyle = css`
@@ -81,12 +107,14 @@ const subtitleStyle = css`
 
 const dragDropContainerStyle = css`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  @media (min-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
   }
 `;
 
@@ -105,15 +133,21 @@ const columnTitleStyle = css`
 `;
 
 const dropZoneStyle = css`
-  min-height: 400px;
+  min-height: 200px;
   border: 2px dashed #e0e0e0;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.75rem;
   background: #f8f9fa;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   transition: all 0.2s;
+
+  @media (min-width: 640px) {
+    min-height: 400px;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
 `;
 
 const dropZoneActiveStyle = css`
@@ -153,21 +187,37 @@ const meaningItemStyle = (isDragging: boolean, isMatched: boolean, isCorrect: bo
 
 const buttonGroupStyle = css`
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
   justify-content: center;
+  flex-wrap: wrap;
+
+  @media (min-width: 640px) {
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: nowrap;
+  }
 `;
 
 const checkButtonStyle = css`
   background: #28a745;
   border: none;
   border-radius: 8px;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: white;
   transition: background 0.2s;
+  flex: 1;
+  min-width: 120px;
+
+  @media (min-width: 640px) {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    flex: none;
+    min-width: auto;
+  }
 
   &:hover {
     background: #218838;
@@ -183,12 +233,21 @@ const resetButtonStyle = css`
   background: #6c757d;
   border: none;
   border-radius: 8px;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: white;
   transition: background 0.2s;
+  flex: 1;
+  min-width: 120px;
+
+  @media (min-width: 640px) {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    flex: none;
+    min-width: auto;
+  }
 
   &:hover {
     background: #5a6268;

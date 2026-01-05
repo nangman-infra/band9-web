@@ -14,35 +14,57 @@ const containerStyle = css`
   display: flex;
   flex-direction: column;
   background: #F5F7FA;
-  padding: 2rem;
+  padding: 1rem;
   padding-top: 6rem; /* 네비게이션 높이만큼 여백 추가 */
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const headerStyle = css`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (min-width: 640px) {
+    margin-bottom: 2rem;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
 `;
 
 const titleStyle = css`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #004C97;
+
+  @media (min-width: 640px) {
+    font-size: 2rem;
+  }
 `;
 
 const backButtonStyle = css`
   background: white;
   border: none;
   border-radius: 8px;
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1rem;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+
+  @media (min-width: 640px) {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -59,9 +81,13 @@ const contentStyle = css`
 const formStyle = css`
   background: white;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #333;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
 `;
 
 const formGroupStyle = css`
@@ -99,8 +125,15 @@ const textareaStyle = css`
 
 const buttonGroupStyle = css`
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  flex-direction: column;
+
+  @media (min-width: 640px) {
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-direction: row;
+  }
 `;
 
 const saveButtonStyle = css`
@@ -137,22 +170,34 @@ const addButtonStyle = css`
 `;
 
 const wordsListStyle = css`
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   background: white;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  @media (min-width: 640px) {
+    margin-top: 2rem;
+    padding: 2rem;
+  }
 `;
 
 const wordItemStyle = css`
   padding: 1rem;
   border-bottom: 1px solid #e0e0e0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.75rem;
 
   &:last-child {
     border-bottom: none;
+  }
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
   }
 `;
 
@@ -161,10 +206,14 @@ const wordInfoStyle = css`
 `;
 
 const wordTitleStyle = css`
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: #004C97;
   margin-bottom: 0.25rem;
+
+  @media (min-width: 640px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const wordDetailStyle = css`
