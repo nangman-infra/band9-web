@@ -7,6 +7,7 @@ import type { ReadingPassage, CreateReadingPassageDto } from '@/services/reading
 import { ApiError } from '@/utils/api';
 import { WordCardSkeleton } from '@/components/WordCardSkeleton';
 import ReadingPassageForm from '@/components/ReadingPassageForm';
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
 const contentStyle = css`
   max-width: 1200px;
@@ -133,6 +134,8 @@ export const ReadingManagement = () => {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingPassage, setEditingPassage] = useState<ReadingPassage | null>(null);
+  const [deletingPassageId, setDeletingPassageId] = useState<string | null>(null);
+  const [deletingPassageTitle, setDeletingPassageTitle] = useState<string>('');
 
   const loadPassages = useCallback(async () => {
     setIsLoading(true);
@@ -163,15 +166,29 @@ export const ReadingManagement = () => {
     loadPassages();
   }, [loadPassages]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
+  const handleDeleteClick = (id: string, title: string) => {
+    setDeletingPassageId(id);
+    setDeletingPassageTitle(title);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingPassageId) return;
     try {
-      await adminApi.delete(`/admin/reading/passages/${id}`);
+      await adminApi.delete(`/admin/reading/passages/${deletingPassageId}`);
+      setDeletingPassageId(null);
+      setDeletingPassageTitle('');
       loadPassages();
     } catch (err) {
       console.error('Failed to delete passage:', err);
       alert('삭제에 실패했습니다.');
+      setDeletingPassageId(null);
+      setDeletingPassageTitle('');
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletingPassageId(null);
+    setDeletingPassageTitle('');
   };
 
   const handleEdit = (passage: ReadingPassage) => {
@@ -247,6 +264,13 @@ export const ReadingManagement = () => {
           />
         )}
       </AnimatePresence>
+      <ConfirmDeleteDialog
+        isOpen={deletingPassageId !== null}
+        title="지문 삭제"
+        message={`"${deletingPassageTitle}" 지문을 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
       <div css={contentStyle}>
         <div css={headerStyle}>
           <h2 css={titleStyle}>리딩 지문 관리</h2>
@@ -283,7 +307,7 @@ export const ReadingManagement = () => {
                     </button>
                     <button
                       css={deleteButtonStyle}
-                      onClick={() => handleDelete(passage.id)}
+                      onClick={() => handleDeleteClick(passage.id, passage.title)}
                       type="button"
                     >
                       삭제

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 // Google OAuth 관련 코드는 주석 처리 (나중에 활성화 가능)
 // import { useAuth } from '@/contexts/AuthContext';
 import { theme } from '@/styles/theme';
@@ -58,8 +58,8 @@ const logoStyle = css`
 
 function Navigation() {
   const navigate = useNavigate();
+  const location = useLocation();
   // Google OAuth 관련 코드는 주석 처리 (나중에 활성화 가능)
-  // const location = useLocation();
   // const { logout, isAuthenticated } = useAuth();
 
   const handleLogoClick = () => {
@@ -70,6 +70,11 @@ function Navigation() {
   // const handleLogout = async () => {
   //   await logout();
   // };
+
+  // 관리자 페이지에서는 네비게이션 숨김
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
 
   // Google OAuth 관련 조건부 렌더링은 주석 처리 (나중에 활성화 가능)
   // 로그인 페이지에서는 네비게이션 숨김

@@ -7,6 +7,7 @@ import type { WritingQuestion, CreateWritingQuestionDto } from '@/services/writi
 import { ApiError } from '@/utils/api';
 import { WordCardSkeleton } from '@/components/WordCardSkeleton';
 import WritingTaskForm from '@/components/WritingTaskForm';
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
 const contentStyle = css`
   max-width: 1200px;
@@ -157,6 +158,8 @@ export const WritingManagement = () => {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<WritingQuestion | null>(null);
+  const [deletingQuestionId, setDeletingQuestionId] = useState<string | null>(null);
+  const [deletingQuestionDate, setDeletingQuestionDate] = useState<string>('');
 
   const loadQuestions = useCallback(async () => {
     setIsLoading(true);
@@ -191,15 +194,29 @@ export const WritingManagement = () => {
     loadQuestions();
   }, [loadQuestions]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
+  const handleDeleteClick = (id: string, date: string) => {
+    setDeletingQuestionId(id);
+    setDeletingQuestionDate(date);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingQuestionId) return;
     try {
-      await adminApi.delete(`/admin/writing/questions/${id}`);
+      await adminApi.delete(`/admin/writing/questions/${deletingQuestionId}`);
+      setDeletingQuestionId(null);
+      setDeletingQuestionDate('');
       loadQuestions();
     } catch (err) {
       console.error('Failed to delete question:', err);
       alert('삭제에 실패했습니다.');
+      setDeletingQuestionId(null);
+      setDeletingQuestionDate('');
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletingQuestionId(null);
+    setDeletingQuestionDate('');
   };
 
   const handleAdd = () => {
@@ -266,6 +283,13 @@ export const WritingManagement = () => {
           />
         )}
       </AnimatePresence>
+      <ConfirmDeleteDialog
+        isOpen={deletingQuestionId !== null}
+        title="문제 삭제"
+        message={`${deletingQuestionDate} 날짜의 문제를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
       <div css={contentStyle}>
         <div css={headerStyle}>
           <h2 css={titleStyle}>라이팅 문제 관리</h2>
@@ -331,7 +355,7 @@ export const WritingManagement = () => {
                   <div css={actionButtonsStyle}>
                     <button
                       css={deleteButtonStyle}
-                      onClick={() => handleDelete(question.id)}
+                      onClick={() => handleDeleteClick(question.id, question.date)}
                       type="button"
                     >
                       삭제
