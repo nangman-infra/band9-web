@@ -1,8 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { getWordsByDate } from '@/domains/vocabulary/api';
+import { ApiError } from '@/utils/api';
 
 const calendarContainerStyle = css`
   background: white;
@@ -105,6 +107,7 @@ const dayButtonStyle = (
   isCurrentMonth: boolean,
   isToday: boolean,
   isSelected: boolean,
+  hasWords: boolean,
 ) => css`
   background: ${isSelected
     ? '#004C97'
@@ -133,9 +136,11 @@ const dayButtonStyle = (
   transition: all 0.2s;
   aspect-ratio: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 0;
+  position: relative;
 
   @media (min-width: 640px) {
     padding: 1rem;
@@ -156,6 +161,20 @@ const dayButtonStyle = (
     &:hover {
       transform: none;
     }
+  }
+`;
+
+const dayNumberStyle = css`
+  line-height: 1;
+`;
+
+const fireEmojiStyle = css`
+  font-size: 0.625rem;
+  line-height: 1;
+  margin-top: 0.125rem;
+
+  @media (min-width: 640px) {
+    font-size: 0.75rem;
   }
 `;
 
@@ -214,6 +233,8 @@ function Calendar({ onDateSelect }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [datesWithWords, setDatesWithWords] = useState<Set<string>>(new Set());
+  const [isLoadingWords, setIsLoadingWords] = useState(false);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -276,6 +297,53 @@ function Calendar({ onDateSelect }: CalendarProps) {
     setSelectedDate(null);
   };
 
+  // 현재 달력에 표시된 월의 모든 날짜에 대해 단어 존재 여부 확인
+  useEffect(() => {
+    const checkWordsForMonth = async () => {
+      setIsLoadingWords(true);
+      const datesToCheck: string[] = [];
+      
+      // 현재 달의 모든 날짜 생성
+      const lastDayOfMonth = new Date(year, month + 1, 0);
+      const daysInCurrentMonth = lastDayOfMonth.getDate();
+      
+      for (let day = 1; day <= daysInCurrentMonth; day += 1) {
+        const dateString = formatDateToString(year, month, day);
+        datesToCheck.push(dateString);
+      }
+
+      // 병렬로 모든 날짜 확인
+      const wordChecks = await Promise.allSettled(
+        datesToCheck.map(async (date) => {
+          try {
+            const words = await getWordsByDate(date);
+            return { date, hasWords: words.length > 0 };
+          } catch (error) {
+            // 404는 단어가 없는 경우이므로 정상 처리
+            if (error instanceof ApiError && error.status === 404) {
+              return { date, hasWords: false };
+            }
+            // 다른 에러는 무시 (로그만 출력)
+            console.error(`Failed to check words for ${date}:`, error);
+            return { date, hasWords: false };
+          }
+        })
+      );
+
+      const datesWithWordsSet = new Set<string>();
+      wordChecks.forEach((result) => {
+        if (result.status === 'fulfilled' && result.value.hasWords) {
+          datesWithWordsSet.add(result.value.date);
+        }
+      });
+
+      setDatesWithWords(datesWithWordsSet);
+      setIsLoadingWords(false);
+    };
+
+    checkWordsForMonth();
+  }, [year, month]);
+
   const monthYearString = `${new Date(year, month).toLocaleString('en-US', { month: 'long' })} ${year}`;
 
   const days = [];
@@ -317,16 +385,18 @@ function Calendar({ onDateSelect }: CalendarProps) {
           const dateString = formatDateToString(year, month, day);
           const isSelected = selectedDate === dateString;
           const isTodayDate = isToday(day);
+          const hasWords = datesWithWords.has(dateString);
           return (
             <motion.button
               key={day}
-              css={dayButtonStyle(true, isTodayDate, isSelected)}
+              css={dayButtonStyle(true, isTodayDate, isSelected, hasWords)}
               onClick={() => handleDateClick(day)}
               type="button"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {day}
+              <span css={dayNumberStyle}>{day}</span>
+              {hasWords && <span css={fireEmojiStyle}>🔥</span>}
             </motion.button>
           );
         })}

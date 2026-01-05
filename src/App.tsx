@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import GlobalStyles from '@/styles/global.tsx';
 import Navigation from '@/components/Navigation.tsx';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import Login from '@/pages/Login.tsx';
 import Home from '@/pages/Home.tsx';
 import Reading from '@/pages/Reading.tsx';
@@ -21,9 +21,36 @@ import VocabularyListening from '@/pages/VocabularyListening.tsx';
 import ReadingAdmin from '@/pages/ReadingAdmin.tsx';
 import WritingPractice from '@/pages/WritingPractice.tsx';
 import WritingAdmin from '@/pages/WritingAdmin.tsx';
+import { css } from '@emotion/react';
+
+const loadingStyle = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+`;
 
 function AppRoutes() {
   const location = useLocation();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // 로딩 중일 때는 로딩 화면 표시
+  if (isLoading) {
+    return <div css={loadingStyle}>Loading...</div>;
+  }
+
+  // 로그인하지 않은 사용자가 /login이 아닌 경로에 접근하려고 하면 /login으로 리다이렉트
+  if (!isAuthenticated && location.pathname !== '/login') {
+    return <Navigate to="/login" replace />;
+  }
+
+  // 이미 로그인한 사용자가 /login 페이지에 접근하려고 하면 홈으로 리다이렉트
+  if (isAuthenticated && location.pathname === '/login') {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <AnimatePresence mode="wait" initial={false}>

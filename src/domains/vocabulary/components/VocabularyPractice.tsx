@@ -19,6 +19,7 @@ const containerStyle = css`
 
   @media (min-width: 640px) {
     padding: 2rem;
+    padding-top: 6rem; /* 네비게이션 높이만큼 여백 추가 */
   }
 `;
 

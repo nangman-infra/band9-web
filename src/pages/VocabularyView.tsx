@@ -14,11 +14,12 @@ const containerStyle = css`
   flex-direction: column;
   background: #F5F7FA;
   padding: 1rem;
-  padding-top: 6rem;
+  padding-top: 6rem; /* 네비게이션 높이만큼 여백 추가 */
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 
   @media (min-width: 640px) {
     padding: 2rem;
+    padding-top: 6rem; /* 네비게이션 높이만큼 여백 추가 */
   }
 `;
 
