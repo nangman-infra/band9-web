@@ -157,7 +157,7 @@ function VocabularyPracticeMode() {
     navigate('/vocabulary');
   };
 
-  const handleModeSelect = (mode: 'quiz' | 'dragdrop') => {
+  const handleModeSelect = (mode: 'quiz' | 'dragdrop' | 'listening') => {
     if (date) {
       navigate(`/vocabulary/${date}/practice/${mode}`);
     }
@@ -206,6 +206,18 @@ function VocabularyPracticeMode() {
           <div css={modeTitleStyle}>🎯 Drag & Drop</div>
           <div css={modeDescriptionStyle}>
             단어와 뜻을 드래그 앤 드롭으로 매칭하는 모드입니다. 단어를 뜻에 맞게 드래그하여 연결해보세요.
+          </div>
+        </motion.div>
+
+        <motion.div
+          css={modeCardStyle}
+          onClick={() => handleModeSelect('listening')}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <div css={modeTitleStyle}>🎧 Listening</div>
+          <div css={modeDescriptionStyle}>
+            단어의 영어 발음을 듣고 스펠링과 뜻을 작성하는 모드입니다. 음성을 재생하여 단어를 듣고 정답을 입력해보세요.
           </div>
         </motion.div>
       </div>
