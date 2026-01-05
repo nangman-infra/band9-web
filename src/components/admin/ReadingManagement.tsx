@@ -1,21 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { readingService, type ReadingPassage, type CreateReadingPassageDto } from '@/services/readingService';
+import { adminApi } from '@/services/adminService';
+import type { ReadingPassage, CreateReadingPassageDto } from '@/services/readingService';
 import { ApiError } from '@/utils/api';
 import { WordCardSkeleton } from '@/components/WordCardSkeleton';
 import ReadingPassageForm from '@/components/ReadingPassageForm';
 
-const containerStyle = css`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #F5F7FA;
-  padding: 2rem;
-  padding-top: 6rem;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+const contentStyle = css`
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 `;
 
 const headerStyle = css`
@@ -26,27 +22,9 @@ const headerStyle = css`
 `;
 
 const titleStyle = css`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #004C97;
-`;
-
-const backButtonStyle = css`
-  background: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
 `;
 
 const addButtonStyle = css`
@@ -64,12 +42,6 @@ const addButtonStyle = css`
   &:hover {
     background: #0066CC;
   }
-`;
-
-const contentStyle = css`
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
 `;
 
 const passageListStyle = css`
@@ -155,8 +127,7 @@ const emptyStateStyle = css`
   font-size: 1.125rem;
 `;
 
-function ReadingAdmin() {
-  const navigate = useNavigate();
+export const ReadingManagement = () => {
   const [passages, setPassages] = useState<ReadingPassage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,12 +138,11 @@ function ReadingAdmin() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await readingService.getAllPassages();
-      // 빈 배열도 정상적인 응답이므로 에러로 처리하지 않음
+      const response = await adminApi.get('/admin/reading/passages');
+      const data = response.data?.data || response.data;
       setPassages(data || []);
     } catch (err) {
       console.error('Failed to load passages:', err);
-      // 404는 지문이 없는 경우이므로 에러로 처리하지 않음
       if (err instanceof ApiError && err.status === 404) {
         setPassages([]);
       } else {
@@ -196,7 +166,7 @@ function ReadingAdmin() {
   const handleDelete = async (id: string) => {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     try {
-      await readingService.deletePassage(id);
+      await adminApi.delete(`/admin/reading/passages/${id}`);
       loadPassages();
     } catch (err) {
       console.error('Failed to delete passage:', err);
@@ -217,9 +187,9 @@ function ReadingAdmin() {
   const handleFormSubmit = async (dto: CreateReadingPassageDto) => {
     try {
       if (editingPassage) {
-        await readingService.updatePassage(editingPassage.id, dto);
+        await adminApi.put(`/admin/reading/passages/${editingPassage.id}`, dto);
       } else {
-        await readingService.createPassage(dto);
+        await adminApi.post('/admin/reading/passages', dto);
       }
       setShowForm(false);
       setEditingPassage(null);
@@ -248,19 +218,11 @@ function ReadingAdmin() {
 
   if (isLoading) {
     return (
-      <div css={containerStyle}>
-        <div css={headerStyle}>
-          <h1 css={titleStyle}>IELTS Reading 지문 관리</h1>
-          <button css={backButtonStyle} onClick={() => navigate('/reading')} type="button">
-            ← Reading
-          </button>
-        </div>
-        <div css={contentStyle}>
-          <div css={passageListStyle}>
-            {[...Array(3)].map((_, index) => (
-              <WordCardSkeleton key={index} />
-            ))}
-          </div>
+      <div css={contentStyle}>
+        <div css={passageListStyle}>
+          {[...Array(3)].map((_, index) => (
+            <WordCardSkeleton key={index} />
+          ))}
         </div>
       </div>
     );
@@ -268,39 +230,14 @@ function ReadingAdmin() {
 
   if (error) {
     return (
-      <div css={containerStyle}>
-        <div css={headerStyle}>
-          <h1 css={titleStyle}>IELTS Reading 지문 관리</h1>
-          <button css={backButtonStyle} onClick={() => navigate('/reading')} type="button">
-            ← Reading
-          </button>
-        </div>
-        <div css={contentStyle}>
-          <div css={emptyStateStyle}>{error}</div>
-        </div>
+      <div css={contentStyle}>
+        <div css={emptyStateStyle}>{error}</div>
       </div>
     );
   }
 
   return (
-    <motion.div
-      css={containerStyle}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div css={headerStyle}>
-        <h1 css={titleStyle}>IELTS Reading 지문 관리</h1>
-        <div css={actionButtonsStyle}>
-          <button css={addButtonStyle} onClick={handleAdd} type="button">
-            + 새 지문 추가
-          </button>
-          <button css={backButtonStyle} onClick={() => navigate('/reading')} type="button">
-            ← Reading
-          </button>
-        </div>
-      </div>
+    <>
       <AnimatePresence>
         {showForm && (
           <ReadingPassageForm
@@ -311,6 +248,12 @@ function ReadingAdmin() {
         )}
       </AnimatePresence>
       <div css={contentStyle}>
+        <div css={headerStyle}>
+          <h2 css={titleStyle}>리딩 지문 관리</h2>
+          <button css={addButtonStyle} onClick={handleAdd} type="button">
+            + 새 지문 추가
+          </button>
+        </div>
         {passages.length === 0 ? (
           <div css={emptyStateStyle}>
             등록된 지문이 없습니다. "새 지문 추가" 버튼을 클릭하여 지문을 추가하세요.
@@ -352,9 +295,6 @@ function ReadingAdmin() {
           </div>
         )}
       </div>
-    </motion.div>
+    </>
   );
-}
-
-export default ReadingAdmin;
-
+};

@@ -239,7 +239,7 @@ function ReadingPractice() {
   // "admin"이 날짜로 들어온 경우 어드민 페이지로 리다이렉트
   useEffect(() => {
     if (date === 'admin') {
-      navigate('/reading/admin', { replace: true });
+      navigate('/admin', { replace: true });
     }
   }, [date, navigate]);
 

@@ -1,21 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { writingService, type WritingQuestion, type CreateWritingQuestionDto } from '@/services/writingService';
+import { adminApi } from '@/services/adminService';
+import type { WritingQuestion, CreateWritingQuestionDto } from '@/services/writingService';
 import { ApiError } from '@/utils/api';
 import { WordCardSkeleton } from '@/components/WordCardSkeleton';
 import WritingTaskForm from '@/components/WritingTaskForm';
 
-const containerStyle = css`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #F5F7FA;
-  padding: 2rem;
-  padding-top: 6rem;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+const contentStyle = css`
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 `;
 
 const headerStyle = css`
@@ -26,27 +22,9 @@ const headerStyle = css`
 `;
 
 const titleStyle = css`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #004C97;
-`;
-
-const backButtonStyle = css`
-  background: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
 `;
 
 const addButtonStyle = css`
@@ -64,12 +42,6 @@ const addButtonStyle = css`
   &:hover {
     background: #0066CC;
   }
-`;
-
-const contentStyle = css`
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
 `;
 
 const taskListStyle = css`
@@ -179,8 +151,7 @@ const emptyMessageStyle = css`
   max-width: 400px;
 `;
 
-function WritingAdmin() {
-  const navigate = useNavigate();
+export const WritingManagement = () => {
   const [questions, setQuestions] = useState<WritingQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -191,9 +162,10 @@ function WritingAdmin() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await writingService.getAllQuestions();
+      const response = await adminApi.get('/admin/writing/questions');
+      const data = response.data?.data || response.data;
       // 날짜 내림차순으로 정렬
-      const sorted = (data || []).sort((a, b) => {
+      const sorted = (data || []).sort((a: WritingQuestion, b: WritingQuestion) => {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       });
       setQuestions(sorted);
@@ -222,7 +194,7 @@ function WritingAdmin() {
   const handleDelete = async (id: string) => {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     try {
-      await writingService.deleteQuestion(id);
+      await adminApi.delete(`/admin/writing/questions/${id}`);
       loadQuestions();
     } catch (err) {
       console.error('Failed to delete question:', err);
@@ -237,7 +209,7 @@ function WritingAdmin() {
 
   const handleFormSubmit = async (dto: CreateWritingQuestionDto) => {
     try {
-      await writingService.createQuestion(dto);
+      await adminApi.post('/admin/writing/questions', dto);
       setShowForm(false);
       setEditingQuestion(null);
       loadQuestions();
@@ -265,19 +237,11 @@ function WritingAdmin() {
 
   if (isLoading) {
     return (
-      <div css={containerStyle}>
-        <div css={headerStyle}>
-          <h1 css={titleStyle}>IELTS Writing 문제 관리</h1>
-          <button css={backButtonStyle} onClick={() => navigate('/writing')} type="button">
-            ← Writing
-          </button>
-        </div>
-        <div css={contentStyle}>
-          <div css={taskListStyle}>
-            {[...Array(3)].map((_, index) => (
-              <WordCardSkeleton key={index} />
-            ))}
-          </div>
+      <div css={contentStyle}>
+        <div css={taskListStyle}>
+          {[...Array(3)].map((_, index) => (
+            <WordCardSkeleton key={index} />
+          ))}
         </div>
       </div>
     );
@@ -285,39 +249,14 @@ function WritingAdmin() {
 
   if (error) {
     return (
-      <div css={containerStyle}>
-        <div css={headerStyle}>
-          <h1 css={titleStyle}>IELTS Writing 문제 관리</h1>
-          <button css={backButtonStyle} onClick={() => navigate('/writing')} type="button">
-            ← Writing
-          </button>
-        </div>
-        <div css={contentStyle}>
-          <div css={emptyStateStyle}>{error}</div>
-        </div>
+      <div css={contentStyle}>
+        <div css={emptyStateStyle}>{error}</div>
       </div>
     );
   }
 
   return (
-    <motion.div
-      css={containerStyle}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div css={headerStyle}>
-        <h1 css={titleStyle}>IELTS Writing 문제 관리</h1>
-        <div css={actionButtonsStyle}>
-          <button css={addButtonStyle} onClick={handleAdd} type="button">
-            + 새 문제 추가
-          </button>
-          <button css={backButtonStyle} onClick={() => navigate('/writing')} type="button">
-            ← Writing
-          </button>
-        </div>
-      </div>
+    <>
       <AnimatePresence>
         {showForm && (
           <WritingTaskForm
@@ -328,6 +267,12 @@ function WritingAdmin() {
         )}
       </AnimatePresence>
       <div css={contentStyle}>
+        <div css={headerStyle}>
+          <h2 css={titleStyle}>라이팅 문제 관리</h2>
+          <button css={addButtonStyle} onClick={handleAdd} type="button">
+            + 새 문제 추가
+          </button>
+        </div>
         {questions.length === 0 ? (
           <motion.div
             css={emptyStateStyle}
@@ -398,10 +343,6 @@ function WritingAdmin() {
           </div>
         )}
       </div>
-    </motion.div>
+    </>
   );
-}
-
-export default WritingAdmin;
-
-
+};

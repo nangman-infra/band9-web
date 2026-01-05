@@ -68,7 +68,7 @@ function Writing() {
   };
 
   const handleAdminClick = () => {
-    navigate('/writing/admin');
+    navigate('/admin');
   };
 
   return (

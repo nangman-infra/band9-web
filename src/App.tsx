@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import GlobalStyles from '@/styles/global.tsx';
 import Navigation from '@/components/Navigation.tsx';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { AdminProvider } from '@/contexts/AdminContext';
 import Login from '@/pages/Login.tsx';
 import Home from '@/pages/Home.tsx';
 import Reading from '@/pages/Reading.tsx';
@@ -18,9 +19,10 @@ import VocabularyPractice from '@/pages/VocabularyPractice.tsx';
 import VocabularyPracticeMode from '@/pages/VocabularyPracticeMode.tsx';
 import VocabularyDragDrop from '@/pages/VocabularyDragDrop.tsx';
 import VocabularyListening from '@/pages/VocabularyListening.tsx';
-import ReadingAdmin from '@/pages/ReadingAdmin.tsx';
+import { AdminLogin } from '@/pages/AdminLogin';
+import { AdminDashboard } from '@/pages/AdminDashboard';
 import WritingPractice from '@/pages/WritingPractice.tsx';
-import WritingAdmin from '@/pages/WritingAdmin.tsx';
+import { ProtectedAdminRoute } from '@/components/ProtectedAdminRoute';
 import { css } from '@emotion/react';
 
 const loadingStyle = css`
@@ -58,10 +60,8 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/reading" element={<Reading />} />
-        <Route path="/reading/admin" element={<ReadingAdmin />} />
         <Route path="/reading/:date" element={<ReadingPractice />} />
         <Route path="/writing" element={<Writing />} />
-        <Route path="/writing/admin" element={<WritingAdmin />} />
         <Route path="/writing/:date" element={<WritingPractice />} />
         <Route path="/listening" element={<Listening />} />
         <Route path="/speaking" element={<Speaking />} />
@@ -72,6 +72,15 @@ function AppRoutes() {
         <Route path="/vocabulary/:date/practice/quiz" element={<VocabularyPractice />} />
         <Route path="/vocabulary/:date/practice/dragdrop" element={<VocabularyDragDrop />} />
         <Route path="/vocabulary/:date/practice/listening" element={<VocabularyListening />} />
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboard />
+            </ProtectedAdminRoute>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -80,11 +89,13 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <GlobalStyles />
-        <Navigation />
-        <AppRoutes />
-      </BrowserRouter>
+      <AdminProvider>
+        <BrowserRouter>
+          <GlobalStyles />
+          <Navigation />
+          <AppRoutes />
+        </BrowserRouter>
+      </AdminProvider>
     </AuthProvider>
   );
 }
