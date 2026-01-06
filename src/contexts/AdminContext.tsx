@@ -26,6 +26,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch (error: any) {
       if (error.response?.status === 401) {
         setIsAdminAuthenticated(false);
+        // 401 에러는 정상적인 경우 (로그인하지 않은 상태)이므로 에러를 던지지 않음
       } else {
         // 다른 에러도 인증되지 않은 것으로 처리
         setIsAdminAuthenticated(false);
@@ -40,10 +41,13 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const checkPath = () => {
       const currentPath = window.location.pathname;
       const isAdminPath = currentPath.startsWith('/admin');
-      if (isAdminPath) {
+      const isAdminLoginPage = currentPath === '/admin' || currentPath === '/admin/';
+      
+      if (isAdminPath && !isAdminLoginPage) {
+        // /admin/dashboard 같은 보호된 경로에서만 인증 상태 확인
         checkAdminStatus();
       } else {
-        // 관리자 페이지가 아니면 인증 상태를 false로 설정하고 로딩 완료
+        // 관리자 페이지가 아니거나 로그인 페이지면 인증 상태를 false로 설정하고 로딩 완료
         setIsAdminAuthenticated(false);
         setIsLoading(false);
       }
@@ -54,19 +58,36 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // 경로 변경 감지를 위한 이벤트 리스너
     const handlePopState = () => {
-      checkPath();
+      // 약간의 지연을 두어 리다이렉트가 완료된 후 체크
+      setTimeout(() => {
+        checkPath();
+      }, 100);
     };
 
     window.addEventListener('popstate', handlePopState);
 
-    // 주기적으로 경로 확인 (pushState/replaceState는 popstate 이벤트를 발생시키지 않음)
-    const intervalId = setInterval(() => {
-      checkPath();
-    }, 100);
+    // pushState/replaceState 감지를 위한 커스텀 이벤트 리스너
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = function(...args) {
+      originalPushState.apply(history, args);
+      setTimeout(() => {
+        checkPath();
+      }, 100);
+    };
+
+    history.replaceState = function(...args) {
+      originalReplaceState.apply(history, args);
+      setTimeout(() => {
+        checkPath();
+      }, 100);
+    };
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
-      clearInterval(intervalId);
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
     };
   }, []);
 
