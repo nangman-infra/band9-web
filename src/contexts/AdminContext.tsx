@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { adminService, adminApi } from '@/services/adminService';
 
 interface AdminContextType {
@@ -15,6 +16,7 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
 
   // 인증 상태 확인
   const checkAdminStatus = async () => {
@@ -35,10 +37,17 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // 컴포넌트 마운트 시 인증 상태 확인
+  // 관리자 페이지에 있을 때만 인증 상태 확인
   useEffect(() => {
-    checkAdminStatus();
-  }, []);
+    const isAdminPath = location.pathname.startsWith('/admin');
+    if (isAdminPath) {
+      checkAdminStatus();
+    } else {
+      // 관리자 페이지가 아니면 인증 상태를 false로 설정하고 로딩 완료
+      setIsAdminAuthenticated(false);
+      setIsLoading(false);
+    }
+  }, [location.pathname]);
 
   const login = async (password: string) => {
     await adminService.login(password);
