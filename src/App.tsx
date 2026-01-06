@@ -44,8 +44,12 @@ function AppRoutes() {
     return <div css={loadingStyle}>Loading...</div>;
   }
 
+  // 관리자 페이지는 인증 체크에서 제외 (관리자 인증은 별도로 처리)
+  const isAdminPath = location.pathname.startsWith('/admin');
+
   // 로그인하지 않은 사용자가 /login이 아닌 경로에 접근하려고 하면 /login으로 리다이렉트
-  if (!isAuthenticated && location.pathname !== '/login') {
+  // 단, 관리자 페이지(/admin)는 제외
+  if (!isAuthenticated && location.pathname !== '/login' && !isAdminPath) {
     return <Navigate to="/login" replace />;
   }
 
