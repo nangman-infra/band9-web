@@ -83,7 +83,7 @@ pipeline {
             steps {
                 script { failureReason = "4-1단계(배포) 실패 - rsync 오류" }
                 echo "🚀 [DEV] ${env.DEV_SERVER}로 배포를 시작합니다."
-                sh "rsync -avz --delete -e 'ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no' ./dist/ sanolx30@${env.DEV_SERVER}:${env.TARGET_DIR}/dist/"
+                sh "rsync -avz --delete -e 'ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no' ./dist/ junoshon@${env.DEV_SERVER}:${env.TARGET_DIR}/dist/"
             }
         }
     }
