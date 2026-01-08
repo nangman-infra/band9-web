@@ -73,7 +73,7 @@ pipeline {
             steps {
                 script { failureReason = "3단계(SSH 접속 확인) 실패 - ${env.DEV_SERVER}에 연결할 수 없습니다." }
                 echo ">>> 배포 대상 서버(${env.DEV_SERVER}) 연결 확인."
-                sh "ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no -o ConnectTimeout=5 sanolx30@${env.DEV_SERVER} 'exit'"
+                sh "ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no -o ConnectTimeout=5 junoshon@${env.DEV_SERVER} 'exit'"
             }
         }
 
