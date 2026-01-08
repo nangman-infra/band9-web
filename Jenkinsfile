@@ -73,7 +73,7 @@ pipeline {
             steps {
                 script { failureReason = "3단계(SSH 접속 확인) 실패 - ${env.DEV_SERVER}에 연결할 수 없습니다." }
                 echo ">>> 배포 대상 서버(${env.DEV_SERVER}) 연결 확인."
-                sh "ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no -o ConnectTimeout=5 wisoft@${env.DEV_SERVER} 'exit'"
+                sh "ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no -o ConnectTimeout=5 sanolx30@${env.DEV_SERVER} 'exit'"
             }
         }
 
@@ -83,7 +83,7 @@ pipeline {
             steps {
                 script { failureReason = "4-1단계(배포) 실패 - rsync 오류" }
                 echo "🚀 [DEV] ${env.DEV_SERVER}로 배포를 시작합니다."
-                sh "rsync -avz --delete -e 'ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no' ./dist/ wisoft@${env.DEV_SERVER}:${env.TARGET_DIR}/dist/"
+                sh "rsync -avz --delete -e 'ssh -i ${env.SSH_KEY_PATH} -o StrictHostKeyChecking=no' ./dist/ sanolx30@${env.DEV_SERVER}:${env.TARGET_DIR}/dist/"
             }
         }
     }
